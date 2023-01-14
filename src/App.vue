@@ -31,22 +31,22 @@
   width: 100%;
   height: .49rem;
   border-top: 1px solid #F1F1F1;
-}
-.docker__item { // 此种命名表示是在.docker里面的item
-  flex: 1; // 没有浮动块的伸展设置，设置平均撑满整个剩余空间。
-  text-align: center;
-  .iconfont {
-    margin: .07rem 0 .02rem 0;
-    font-size: .2rem; //设置字体图标的大小
+  &__item { // 此种命名表示是选择器是.docker__item
+    flex: 1; // 没有浮动块的伸展设置，设置平均撑满整个剩余空间。
+    text-align: center;
+    .iconfont {
+      margin: .07rem 0 .02rem 0;
+      font-size: .2rem; //设置字体图标的大小
+    }
+    &--active { //相当于选择器是.docker__item--active
+      color: #1FA4FC;
+    }
   }
-}
-.docker__item--active {
-  color: #1FA4FC;
-}
-.docker__title {
-  // 对于中文浏览器(英文没有问题)，chrome最小字体限制是12px，这里需要使用transform scale缩小字体为需要的10px
-  font-size: .2rem;
-  transform: scale(.5, .5); //设置缩放比例，是20px的50% = 10px
-  transform-origin: center top; //定义缩放的中心点
+  &__title { // 此选择器相当于是.docker__title
+    // 对于中文浏览器(英文没有问题)，chrome最小字体限制是12px，这里需要使用transform scale缩小字体为需要的10px
+    font-size: .2rem;
+    transform: scale(.5, .5); //设置缩放比例，是20px的50% = 10px
+    transform-origin: center top; //定义缩放的中心点
+  }
 }
 </style>
