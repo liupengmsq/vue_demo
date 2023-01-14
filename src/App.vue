@@ -3,6 +3,8 @@
     <div class="position">
       <span class="iconfont position__icon">&#xe619;</span> <!-- 字体图标 -->
       北京理工大学国防科技园2号楼10层
+      北京理工大学国防科技园2号楼10层
+      北京理工大学国防科技园2号楼10层
       <span class="iconfont position__notice">&#xe63f;</span> <!-- 字体图标 -->
     </div>
   </div>
@@ -29,6 +31,9 @@
 </template>
 
 <style lang="scss">
+@import './style/variables.scss';
+@import './style/mixins.scss';
+
 .wrapper {
   position: absolute;
   left: 0;
@@ -38,13 +43,11 @@
   padding: 0 .18rem
 }
 .position {
-  overflow: hidden; //元素溢出时隐藏，用于文字过多时不显示超出部分
   position: relative;
   padding: .16rem .24rem .16rem 0;
   line-height: .22rem;
   font-size: .16rem;
-  white-space: nowrap; //文字过多时不换行
-  text-overflow: ellipsis; //文字过多时，超出部分显示...
+  @include ellipsis; //引入mixins.scss中定义的字体超出范围显示省略号的样式
   .position__icon { //不用&连接父子选择器相当于是.position .position__icon
     position: relative;
     top: .01rem;
@@ -56,7 +59,7 @@
     top: .17rem;
     font-size: .2rem;
   }
-  color: #333;
+  color: $content-fontcolor; //使用位于variables.scss中定义的变量
 }
 
 .docker {
@@ -69,7 +72,7 @@
   width: 100%;
   height: .49rem;
   border-top: 1px solid #F1F1F1;
-  color: #333;
+  color: $content-fontcolor; //使用位于variables.scss中定义的变量
   &__item { // 此种命名表示是选择器是.docker__item
     flex: 1; // 没有浮动块的伸展设置，设置平均撑满整个剩余空间。
     text-align: center;

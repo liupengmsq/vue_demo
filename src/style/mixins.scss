@@ -1,0 +1,5 @@
+@mixin ellipsis { //字体超出时显示省略号的mixin
+  overflow: hidden; //元素溢出时隐藏，用于文字过多时不显示超出部分
+  white-space: nowrap; //文字过多时不换行
+  text-overflow: ellipsis; //文字过多时，超出部分显示...
+}
