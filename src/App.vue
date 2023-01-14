@@ -1,8 +1,16 @@
 <template>
+  <div class="wrapper">
+    <div class="position">
+      <span class="iconfont position__icon">&#xe619;</span> <!-- 字体图标 -->
+      北京理工大学国防科技园2号楼10层
+      <span class="iconfont position__notice">&#xe63f;</span> <!-- 字体图标 -->
+    </div>
+  </div>
+
   <div class="docker">
     <!-- 使用了Sass的BEM命名方式来命名css：block__element--Modifier -->
     <span class="docker__item docker__item--active">
-      <div class="iconfont">&#xf0174;</div>  <!-- 字体图标 -->
+      <div class="iconfont">&#xe600;</div>  <!-- 字体图标 -->
       <div class="docker__title">首页</div>
     </span>
     <span class="docker__item">
@@ -21,6 +29,36 @@
 </template>
 
 <style lang="scss">
+.wrapper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: .5rem;
+  right: 0;
+  padding: 0 .18rem
+}
+.position {
+  overflow: hidden; //元素溢出时隐藏，用于文字过多时不显示超出部分
+  position: relative;
+  padding: .16rem .24rem .16rem 0;
+  line-height: .22rem;
+  font-size: .16rem;
+  white-space: nowrap; //文字过多时不换行
+  text-overflow: ellipsis; //文字过多时，超出部分显示...
+  .position__icon { //不用&连接父子选择器相当于是.position .position__icon
+    position: relative;
+    top: .01rem;
+    font-size: .2rem;
+  }
+  .position__notice {
+    position: absolute; //子绝父相，相对定位于父框.position
+    right: 0;
+    top: .17rem;
+    font-size: .2rem;
+  }
+  color: #333;
+}
+
 .docker {
   display: flex; // 启用浮动布局
   box-sizing: border-box; // 告诉浏览器：你想要设置的边框和内边距的值是包含在 width 内的。
@@ -31,6 +69,7 @@
   width: 100%;
   height: .49rem;
   border-top: 1px solid #F1F1F1;
+  color: #333;
   &__item { // 此种命名表示是选择器是.docker__item
     flex: 1; // 没有浮动块的伸展设置，设置平均撑满整个剩余空间。
     text-align: center;
