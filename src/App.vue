@@ -7,6 +7,10 @@
       北京理工大学国防科技园2号楼10层
       <span class="iconfont position__notice">&#xe63f;</span> <!-- 字体图标 -->
     </div>
+    <div class="search">
+      <span class="iconfont search__icon">&#xe6ac;</span>
+      <span class="search__text">搜索内容搜索内容</span>
+    </div>
   </div>
 
   <div class="docker">
@@ -60,6 +64,25 @@
     font-size: .2rem;
   }
   color: $content-fontcolor; //使用位于variables.scss中定义的变量
+}
+
+.search {
+  margin-bottom: .12rem;
+  line-height: .32rem;
+  background-color: #F5F5F5;
+  color: #B7B7B7;
+  border-radius: .16rem;
+  font-size: .14rem;
+  .search__icon {
+    position: relative;
+    top: .02rem;
+    display: inline-block;
+    padding: 0 .12rem 0 .16rem;
+    font-size: .16rem;
+  }
+  &__text {
+    display: inline-block;
+  }
 }
 
 .docker {
