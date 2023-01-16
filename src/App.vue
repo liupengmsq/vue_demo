@@ -11,10 +11,55 @@
       <span class="iconfont search__icon">&#xe6ac;</span>
       <span class="search__text">搜索内容搜索内容</span>
     </div>
+
     <div class="banner">
       <img class="banner__img" src="@/assets/images/banner.jpg" alt="">
     </div>
-    <div>123123</div>
+
+    <div class="icons">
+      <div class="icons__item">
+        <img src="@/assets/images/超市.png" alt="" class="icons__item__img">
+        <p class="icons__item__desc">超市便利</p>
+      </div>
+      <div class="icons__item">
+        <img src="@/assets/images/菜市场.png" alt="" class="icons__item__img">
+        <p class="icons__item__desc">菜市场</p>
+      </div>
+      <div class="icons__item">
+        <img src="@/assets/images/水果店.png" alt="" class="icons__item__img">
+        <p class="icons__item__desc">水果店</p>
+      </div>
+      <div class="icons__item">
+        <img src="@/assets/images/鲜花.png" alt="" class="icons__item__img">
+        <p class="icons__item__desc">鲜花绿植</p>
+      </div>
+      <div class="icons__item">
+        <img src="@/assets/images/医药健康.png" alt="" class="icons__item__img">
+        <p class="icons__item__desc">医药健康</p>
+      </div>
+      <div class="icons__item">
+        <img src="@/assets/images/家居.png" alt="" class="icons__item__img">
+        <p class="icons__item__desc">家居时尚</p>
+      </div>
+      <div class="icons__item">
+        <img src="@/assets/images/蛋糕.png" alt="" class="icons__item__img">
+        <p class="icons__item__desc">烘培蛋糕</p>
+      </div>
+      <div class="icons__item">
+        <img src="@/assets/images/签到.png" alt="" class="icons__item__img">
+        <p class="icons__item__desc">签到</p>
+      </div>
+      <div class="icons__item">
+        <img src="@/assets/images/大牌免运.png" alt="" class="icons__item__img">
+        <p class="icons__item__desc">大牌免运</p>
+      </div>
+      <div class="icons__item">
+        <img src="@/assets/images/红包.png" alt="" class="icons__item__img">
+        <p class="icons__item__desc">红包套餐</p>
+      </div>
+    </div>
+    <div class="gap"></div>
+
   </div>
 
   <div class="docker">
@@ -110,6 +155,34 @@
   }
 }
 
+.icons {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: .16rem;
+  &__item {
+    width: 20%;
+    &__img {
+      // 将img的inline改为block，
+      // 让下面的margin生效实现图片的居中(相对于当前容器icons__item居中)
+      display: block;
+      width: .4rem;
+      height: .4rem;
+      margin: 0 auto;
+    }
+    &__desc {
+      margin: .06rem 0 .16rem 0;
+      text-align: center;
+      color: $content-fontcolor;
+    }
+  }
+}
+
+.gap {
+  margin: 0 -.18rem; // 设置margin的left与right为负值，表达的意思是向左右撑满整个行
+  height: .1rem;
+  background-color: $content-bgColor;
+}
+
 .docker {
   display: flex; // 启用浮动布局
   box-sizing: border-box; // 告诉浏览器：你想要设置的边框和内边距的值是包含在 width 内的。
@@ -119,7 +192,7 @@
   bottom: 0;
   width: 100%;
   height: .49rem;
-  border-top: 1px solid #F1F1F1;
+  border-top: 1px solid $content-bgColor;
   color: $content-fontcolor; //使用位于variables.scss中定义的变量
   &__item { // 此种命名表示是选择器是.docker__item
     flex: 1; // 没有浮动块的伸展设置，设置平均撑满整个剩余空间。
