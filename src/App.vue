@@ -11,6 +11,10 @@
       <span class="iconfont search__icon">&#xe6ac;</span>
       <span class="search__text">搜索内容搜索内容</span>
     </div>
+    <div class="banner">
+      <img class="banner__img" src="@/assets/images/banner.jpg" alt="">
+    </div>
+    <div>123123</div>
   </div>
 
   <div class="docker">
@@ -82,6 +86,27 @@
   }
   &__text {
     display: inline-block;
+  }
+}
+
+.banner {
+  //当网速过慢时，banner内的img还没显示出来，
+  //为了防止banner下方的html元素自动占据当前img的位置导致页面布局抖动
+  //我们使用了如下三个css样式来添加一个占位的白板
+  //当图片没显示的时候，此白板（也就是banner容器的内衬底边的高度）被显示出来
+  //导致位于bannner下方的html元素不会上移
+  //当图片显示出来的时候，此底部的内衬会被图片挤到下方，而由于设置了overflow: hidden
+  //导致溢出的底部内衬不显示出来，页面布局不受影响。
+  height: 0;
+  overflow: hidden;
+  //设置占位白板的高度的百分比是banner下的img图片的"高度"除以"宽度"的百分比。
+  //css中以百分比设置值时，是去计算当前所在的容器的宽度的百分比。
+  //而当前容器的宽度就是img图片所在的容器宽度，这个百分比计算得到就是远了image的高度。
+  padding-bottom: 25.4%;
+
+  //banner下的图片
+  &__img {
+    width: 100%; //控制banner图片banner.jpg的大小
   }
 }
 
