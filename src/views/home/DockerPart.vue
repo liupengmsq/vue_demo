@@ -1,28 +1,35 @@
 <template>
   <div class="docker">
     <!-- 使用了Sass的BEM命名方式来命名css：block__element--Modifier -->
-    <span class="docker__item docker__item--active">
-      <div class="iconfont">&#xe600;</div>  <!-- 字体图标 -->
-      <div class="docker__title">首页</div>
-    </span>
-    <span class="docker__item">
-      <div class="iconfont">&#xe645;</div>
-      <div class="docker__title">购物车</div>
-    </span>
-    <span class="docker__item">
-      <div class="iconfont">&#xe643;</div>
-      <div class="docker__title">订单</div>
-    </span>
-    <span class="docker__item">
-      <div class="iconfont">&#xe60d;</div>
-      <div class="docker__title">我的</div>
+    <span
+      v-for="(item, index) in dockerList"
+      :key="item.icon"
+      :class="{
+        'docker__item': true,
+        'docker__item--active': index === 0 // 第一个span项目才会使用docker__item--active
+        }"
+    >
+      <!-- 字体图标, 为了避免vue自动将插值表达式中的内容转移，使用v-html输出raw html -->
+      <div class="iconfont" v-html="item.icon" />
+      <div class="docker__title">{{ item.text }}</div>
     </span>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'DockerPart'
+  name: 'DockerPart',
+  setup () {
+    const dockerList = [
+      { icon: '&#xe600;', text: '首页' },
+      { icon: '&#xe645;', text: '购物车' },
+      { icon: '&#xe643;', text: '订单' },
+      { icon: '&#xe60d;', text: '我的' }
+    ]
+    return {
+      dockerList
+    }
+  }
 }
 </script>
 
