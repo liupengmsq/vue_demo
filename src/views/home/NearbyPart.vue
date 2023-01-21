@@ -1,76 +1,23 @@
 <template>
     <div class="nearby">
       <h3 class="nearby__title">附近店铺</h3>
-      <div class="nearby__item">
-        <img class="nearby__item__img" src="@/assets/images/near.png" alt="">
+      <div
+        class="nearby__item"
+        v-for="item in nearbyList"
+        :key="item.id"
+      >
+        <img class="nearby__item__img" :src="item.imgUrl" alt="">
         <div class="nearby__item__content">
-          <div class="nearby__item__content__title">沃尔玛</div>
+          <div class="nearby__item__content__title">{{ item.title }}</div>
           <div class="nearby__item__content__tags">
-            <span class="nearby__item__content__tags__tag">月售1万+</span>
-            <span class="nearby__item__content__tags__tag">起送¥0</span>
-            <span class="nearby__item__content__tags__tag">基础运费¥5</span>
+            <span
+              class="nearby__item__content__tags__tag"
+              v-for="(innerItem, innerIndex) in item.tags"
+              :key="innerIndex">
+              {{ innerItem }}
+            </span>
           </div>
-          <p class="nearby__item__content__highlight">VIP尊享满89元减4元运费券（每月3张）</p>
-        </div>
-      </div>
-      <div class="nearby__item">
-        <img class="nearby__item__img" src="@/assets/images/near.png" alt="">
-        <div class="nearby__item__content">
-          <div class="nearby__item__content__title">沃尔玛</div>
-          <div class="nearby__item__content__tags">
-            <span class="nearby__item__content__tags__tag">月售1万+</span>
-            <span class="nearby__item__content__tags__tag">起送¥0</span>
-            <span class="nearby__item__content__tags__tag">基础运费¥5</span>
-          </div>
-          <p class="nearby__item__content__highlight">VIP尊享满89元减4元运费券（每月3张）</p>
-        </div>
-      </div>
-      <div class="nearby__item">
-        <img class="nearby__item__img" src="@/assets/images/near.png" alt="">
-        <div class="nearby__item__content">
-          <div class="nearby__item__content__title">沃尔玛</div>
-          <div class="nearby__item__content__tags">
-            <span class="nearby__item__content__tags__tag">月售1万+</span>
-            <span class="nearby__item__content__tags__tag">起送¥0</span>
-            <span class="nearby__item__content__tags__tag">基础运费¥5</span>
-          </div>
-          <p class="nearby__item__content__highlight">VIP尊享满89元减4元运费券（每月3张）</p>
-        </div>
-      </div>
-      <div class="nearby__item">
-        <img class="nearby__item__img" src="@/assets/images/near.png" alt="">
-        <div class="nearby__item__content">
-          <div class="nearby__item__content__title">沃尔玛</div>
-          <div class="nearby__item__content__tags">
-            <span class="nearby__item__content__tags__tag">月售1万+</span>
-            <span class="nearby__item__content__tags__tag">起送¥0</span>
-            <span class="nearby__item__content__tags__tag">基础运费¥5</span>
-          </div>
-          <p class="nearby__item__content__highlight">VIP尊享满89元减4元运费券（每月3张）</p>
-        </div>
-      </div>
-      <div class="nearby__item">
-        <img class="nearby__item__img" src="@/assets/images/near.png" alt="">
-        <div class="nearby__item__content">
-          <div class="nearby__item__content__title">沃尔玛</div>
-          <div class="nearby__item__content__tags">
-            <span class="nearby__item__content__tags__tag">月售1万+</span>
-            <span class="nearby__item__content__tags__tag">起送¥0</span>
-            <span class="nearby__item__content__tags__tag">基础运费¥5</span>
-          </div>
-          <p class="nearby__item__content__highlight">VIP尊享满89元减4元运费券（每月3张）</p>
-        </div>
-      </div>
-      <div class="nearby__item">
-        <img class="nearby__item__img" src="@/assets/images/near.png" alt="">
-        <div class="nearby__item__content">
-          <div class="nearby__item__content__title">沃尔玛</div>
-          <div class="nearby__item__content__tags">
-            <span class="nearby__item__content__tags__tag">月售1万+</span>
-            <span class="nearby__item__content__tags__tag">起送¥0</span>
-            <span class="nearby__item__content__tags__tag">基础运费¥5</span>
-          </div>
-          <p class="nearby__item__content__highlight">VIP尊享满89元减4元运费券（每月3张）</p>
+          <p class="nearby__item__content__highlight">{{ item.desc }}</p>
         </div>
       </div>
     </div>
@@ -78,7 +25,48 @@
 
 <script>
 export default {
-  name: 'NearbyPart'
+  name: 'NearbyPart',
+  setup () {
+    // 此方法通过使用vue cli基于的webpackage提供的require方法，
+    // 它在代码编译时，将图片的相对路径转为npm服务端的网络地址
+    function getImgUrl (img) {
+      return require('@/assets/images/' + img)
+    }
+    const nearbyList = [
+      {
+        id: 1,
+        imgUrl: getImgUrl('near.png'),
+        title: '沃尔玛',
+        tags: ['月售100万+', '起送¥1', '基础运费¥5'],
+        desc: 'VIP尊享满89元减4元运费券（每月3张）'
+      },
+      {
+        id: 2,
+        imgUrl: getImgUrl('near.png'),
+        title: '沃尔玛',
+        tags: ['月售1万+', '起送¥2', '基础运费¥5'],
+        desc: 'VIP尊享满89元减4元运费券（每月300张）'
+      },
+      {
+        id: 3,
+        imgUrl: getImgUrl('near.png'),
+        title: '沃尔玛',
+        tags: ['月售1万+', '起送¥2', '基础运费¥5'],
+        desc: 'VIP尊享满89元减4元运费券（每月300张）'
+      },
+      {
+        id: 4,
+        imgUrl: getImgUrl('near.png'),
+        title: '沃尔玛',
+        tags: ['月售493万+', '起送¥2', '基础运费¥5'],
+        desc: 'VIP尊享满1元减4元运费券（每月300张）'
+      }
+    ]
+
+    return {
+      nearbyList
+    }
+  }
 }
 </script>
 
