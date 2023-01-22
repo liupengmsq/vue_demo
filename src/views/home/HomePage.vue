@@ -21,7 +21,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .wrapper {
   // 当一个块级元素（div 元素、p 元素之类的）
   // 的内容在垂直方向发生溢出时，
