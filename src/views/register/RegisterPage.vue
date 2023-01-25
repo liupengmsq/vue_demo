@@ -7,8 +7,11 @@
         <div class="wrapper__input">
             <input type="password" placeholder="请输入密码" class="wrapper__input__content" />
         </div>
-        <div class="wrapper__login-button" @click="handleLogin">登录</div>
-        <div class="wrapper__login-link" @click="handleRegister">立即注册</div>
+        <div class="wrapper__input">
+            <input type="password" placeholder="确认密码" class="wrapper__input__content" />
+        </div>
+        <div class="wrapper__register-button">注册</div>
+        <div class="wrapper__register-link" @click="handleRegistered">已有账号去登录</div>
     </div>
 </template>
 
@@ -16,20 +19,17 @@
 import { useRouter } from 'vue-router';
 
 export default {
-  name: 'LoginPage',
+  name: 'RegisterPage',
   setup () {
-    // 获取路由的对象
     const router = useRouter();
-    const handleLogin = () => {
-      // 登录成功后，设置浏览器的local storage的isLogin字段为true
-      localStorage.isLogin = true;
-      // 登录成功后，跳转到home页面
-      router.push({ name: 'home' });
+
+    // 已有账号，跳转到登录页面
+    const handleRegistered = () => {
+      router.push({ name: 'login' });
     }
-    const handleRegister = () => {
-        router.push({ name: 'register' });
+    return {
+      handleRegistered
     }
-    return { handleLogin, handleRegister };
   }
 }
 </script>
@@ -71,7 +71,7 @@ export default {
             }
         }
     }
-    &__login-button {
+    &__register-button {
         margin: .32rem .4rem .16rem .4rem;
         line-height: .48rem;
         background: #0091FF;
@@ -81,7 +81,7 @@ export default {
         font-size: .16rem;
         text-align: center;
     }
-    &__login-link {
+    &__register-link {
         text-align: center;
         font-size: .14rem;
         color: $content-notice-fontcolor;
