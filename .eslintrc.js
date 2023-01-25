@@ -13,6 +13,8 @@ module.exports = {
   rules: {
     // 禁止检查分号
     semi: 0,
+    // 禁止检查缩进
+    indent: 'off',
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off'
   }
