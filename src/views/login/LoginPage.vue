@@ -2,10 +2,10 @@
     <div class="wrapper">
         <img class="wrapper__img" src="@/assets/images/user.svg" alt="">
         <div class="wrapper__input">
-            <input type="text" placeholder="请输入手机号" class="wrapper__input__content" />
+            <input type="text" placeholder="请输入手机号" class="wrapper__input__content" v-model="data.username" />
         </div>
         <div class="wrapper__input">
-            <input type="password" placeholder="请输入密码" class="wrapper__input__content" />
+            <input type="password" placeholder="请输入密码" class="wrapper__input__content" v-model="data.password" />
         </div>
         <div class="wrapper__login-button" @click="handleLogin">登录</div>
         <div class="wrapper__login-link" @click="handleRegister">立即注册</div>
@@ -13,23 +13,44 @@
 </template>
 
 <script>
+import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
+import { post } from '../../utils/request';
 
 export default {
   name: 'LoginPage',
   setup () {
+    const data = reactive({
+        username: '',
+        password: ''
+    });
+
     // 获取路由的对象
     const router = useRouter();
-    const handleLogin = () => {
-      // 登录成功后，设置浏览器的local storage的isLogin字段为true
-      localStorage.isLogin = true;
-      // 登录成功后，跳转到home页面
-      router.push({ name: 'home' });
-    }
+    const handleLogin = async () => {
+        try {
+            const result = await post('/api/user/login', {
+                userName: data.username,
+                password: data.password
+            });
+            console.log(result);
+            // javascript的可选链运算符（?.）
+            if (result?.errorno === 0) {
+                // 登录成功后，设置浏览器的local storage的isLogin字段为true
+                localStorage.isLogin = true;
+                // 登录成功后，跳转到home页面
+                router.push({ name: 'home' });
+            } else {
+                alert('登录失败');
+            }
+        } catch (e) {
+            alert('请求失败');
+        }
+    };
     const handleRegister = () => {
         router.push({ name: 'register' });
-    }
-    return { handleLogin, handleRegister };
+    };
+    return { handleLogin, handleRegister, data };
   }
 }
 </script>
