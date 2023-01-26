@@ -10,20 +10,40 @@
         <div class="wrapper__login-button" @click="handleLogin">登录</div>
         <div class="wrapper__login-link" @click="handleRegister">立即注册</div>
     </div>
+    <Toast v-if="data.showToast" :message="data.toastMessage" />
 </template>
 
 <script>
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { post } from '../../utils/request';
+import ToastComponent from '../../components/ToastComponent.vue'
 
 export default {
   name: 'LoginPage',
+  components: {
+    Toast: ToastComponent
+  },
   setup () {
     const data = reactive({
         username: '',
-        password: ''
+        password: '',
+        showToast: false,
+        toastMessage: ''
     });
+
+    const showToast = (message) => {
+        // 显示提示框
+        data.showToast = true;
+        // 设置显示的内容
+        data.toastMessage = message;
+
+        // 三秒后提示框小时
+        setTimeout(() => {
+            data.showToast = false;
+            data.toastMessage = '';
+        }, 3000);
+    }
 
     // 获取路由的对象
     const router = useRouter();
@@ -41,10 +61,10 @@ export default {
                 // 登录成功后，跳转到home页面
                 router.push({ name: 'home' });
             } else {
-                alert('登录失败');
+                showToast('登录失败');
             }
         } catch (e) {
-            alert('请求失败');
+            showToast('请求失败');
         }
     };
     const handleRegister = () => {
