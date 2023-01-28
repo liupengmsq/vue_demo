@@ -2,32 +2,28 @@
     <div class="wrapper">
         <img class="wrapper__img" src="@/assets/images/user.svg" alt="">
         <div class="wrapper__input">
-            <input type="text" placeholder="请输入手机号" class="wrapper__input__content" v-model="data.username" />
+            <input type="text" placeholder="请输入手机号" class="wrapper__input__content" v-model="username" />
         </div>
         <div class="wrapper__input">
-            <input type="password" placeholder="请输入密码" autocomplete="new-password" class="wrapper__input__content" v-model="data.password" />
+            <input type="password" placeholder="请输入密码" autocomplete="new-password" class="wrapper__input__content" v-model="password" />
         </div>
         <div class="wrapper__input">
-            <input type="password" placeholder="确认密码" autocomplete="new-password" class="wrapper__input__content" v-model="data.confirmPassword"/>
+            <input type="password" placeholder="确认密码" autocomplete="new-password" class="wrapper__input__content" v-model="confirmPassword"/>
         </div>
-        <div class="wrapper__register-button" @click="handleRegistering">注册</div>
-        <div class="wrapper__register-link" @click="handleRegistered">已有账号去登录</div>
+        <div class="wrapper__register-button" @click="handleRegister">注册</div>
+        <div class="wrapper__register-link" @click="handleGoToLogin">已有账号去登录</div>
     </div>
-    <Toast v-if="toastData.showToast" :message="toastData.toastMessage" />
+    <Toast v-if="show" :message="toastMessage" />
 </template>
 
 <script>
-import { reactive } from 'vue';
+import { reactive, toRefs } from 'vue';
 import { useRouter } from 'vue-router';
 import { post } from '../../utils/request';
 import ToastComponent, { useToastEffect } from '../../components/ToastComponent.vue'
 
-export default {
-  name: 'RegisterPage',
-  components: {
-    Toast: ToastComponent
-  },
-  setup () {
+// 注册的页面逻辑
+const useRegisterEffect = (showToast) => {
     const router = useRouter();
 
     const data = reactive({
@@ -36,11 +32,10 @@ export default {
         confirmPassword: ''
     });
 
-    const { toastData, showToast } = useToastEffect();
-
-    const handleRegistering = async () => {
+    const handleRegister = async () => {
         console.log(data.password, data.confirmPassword);
         if (data.password !== data.confirmPassword) {
+            console.log("Password doesn't matched");
             showToast('密码不匹配');
             return;
         }
@@ -59,12 +54,34 @@ export default {
         }
     };
 
-    const handleRegistered = () => {
+    const { username, password, confirmPassword } = toRefs(data);
+
+    return { handleRegister, username, password, confirmPassword };
+}
+
+// 跳转登录页面的逻辑
+const useGoToLoginEffect = () => {
+    const router = useRouter();
+
+    const handleGoToLogin = () => {
         router.push({ name: 'login' });
     };
 
+    return { handleGoToLogin };
+};
+
+export default {
+  name: 'RegisterPage',
+  components: {
+    Toast: ToastComponent
+  },
+  setup () {
+    const { show, toastMessage, showToast } = useToastEffect();
+    const { handleRegister, username, password, confirmPassword } = useRegisterEffect(showToast);
+    const { handleGoToLogin } = useGoToLoginEffect();
+
     return {
-        handleRegistering, handleRegistered, data, toastData
+        handleRegister, username, password, confirmPassword, handleGoToLogin, show, toastMessage
     }
   }
 }
