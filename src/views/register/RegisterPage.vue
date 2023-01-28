@@ -34,6 +34,11 @@ const useRegisterEffect = (showToast) => {
 
     const handleRegister = async () => {
         console.log(data.password, data.confirmPassword);
+        if (data.username === '' || data.password === '' || data.confirmPassword === '') {
+            showToast('用户名或密码不能为空');
+            return;
+        }
+
         if (data.password !== data.confirmPassword) {
             console.log("Password doesn't matched");
             showToast('密码不匹配');
