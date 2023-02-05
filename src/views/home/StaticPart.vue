@@ -122,8 +122,8 @@ export default {
 .search {
   margin-bottom: .12rem;
   line-height: .32rem;
-  background-color: #F5F5F5;
-  color: #B7B7B7;
+  background-color: $search-bgColor;;
+  color: $search-fontColor;
   border-radius: .16rem;
   font-size: .14rem;
   .search__icon {
