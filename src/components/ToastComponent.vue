@@ -36,6 +36,7 @@ export const useToastEffect = () => {
 </script>
 
 <style lang="scss" scoped>
+@import '../style/variables.scss';
 .toast {
     // 水平与垂直居中
     position: fixed;
@@ -46,6 +47,6 @@ export const useToastEffect = () => {
     padding: .1rem;
     background: rgba(0,0,0,.35); // rgba中的a是透明度的设置
     border-radius: .05rem;
-    color: #FFF;
+    color: $search-bgColor;
 }
 </style>
