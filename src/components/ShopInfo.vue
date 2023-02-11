@@ -65,7 +65,7 @@ export default {
             margin: .08rem 0 0 0; //p标签自带的上下的margin，需要设置为0剔除掉默认设置。
             line-height: .18rem;
             font-size: .13rem;
-            color: $content-fontcolor
+            color: $hightlight-fontColor;
         }
     }
 }

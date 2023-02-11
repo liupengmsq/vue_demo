@@ -1,22 +1,23 @@
 <template>
     <div class="content">
         <div class="category">
-            <div class="category__item category__item--active">全部商品</div>
-            <div class="category__item">秒杀</div>
-            <div class="category__item">新鲜水果</div>
-            <div class="category__item">休闲食品</div>
-            <div class="category__item">时令蔬菜</div>
-            <div class="category__item">肉弹家禽</div>
+            <div
+                :class="{'category__item': true, 'category__item--active': currentTab === item.tab}"
+                v-for="item in categories"
+                :key="item.name"
+                @click="handleTabClick(item.tab)">
+                {{ item.name }}
+            </div>
         </div>
         <div class="product">
-            <div class="product__item">
-                <img class="product__item__img" src="@/assets/images/near.png">
+            <div class="product__item" v-for="item in list" :key="item.id" >
+                <img class="product__item__img" :src="item.imageUrl">
                 <div class="product__item__detail">
-                    <h4 class="product__item__detail__title">番茄250g/份</h4>
-                    <p class="product__item__detail__sales">月售10件</p>
+                    <h4 class="product__item__detail__title">{{ item.name }}</h4>
+                    <p class="product__item__detail__sales">月售{{ item.sales }}件</p>
                     <p class="product__item__detail__price">
-                        <span class="product__item__detail__price__yen">&yen;</span>33.6
-                        <span class="product__item__detail__price__origin">&yen;66.6</span>
+                        <span class="product__item__detail__price__yen">&yen;</span>{{ item.price }}
+                        <span class="product__item__detail__price__origin">&yen;{{ item.oldPrice }}</span>
                     </p>
                 </div>
                 <div class="product__item__number">
@@ -30,6 +31,85 @@
 </template>
 
 <script>
+import { reactive, toRefs, ref, watchEffect } from 'vue';
+import { useRoute } from 'vue-router';
+import { get } from '../../utils/request.js';
+import { getImgUrl } from '../../utils/common';
+
+const categories = [
+    {
+        name: '全部商品',
+        tab: 'all'
+    },
+    {
+        name: '秒杀',
+        tab: 'seckill'
+    },
+    {
+        name: '新鲜水果',
+        tab: 'fruit'
+    }
+];
+
+// 切换左侧分类tab的逻辑
+const useTabEffect = () => {
+    // 代表用户当前选中的那个分类项, 默认是第一个分类
+    const currentTab = ref(categories[0].tab);
+
+    // 用户点击左侧分类tab后，页面传入的参数是所选的tab，
+    // 此方法会将currentTab的值更改为传入的tab
+    // 由于这个currentTab是响应式的对象，它更改会反映到页面端，
+    // 导致css的代码'category__item--active': currentTab === item.tab 会将当前的tab高亮显示
+    // 而且由于currentTab是被下面的useCurrentListEffect依赖的，而且是被getContentData依赖的
+    // getContentData是在watchEffect中的，那么currentTab的值有个更改就会触发getContentData的调用
+    // 而getContentData的调用会导致向后端服务器发送currentTab对应的数据请求，最终将返回的商品信息显示到右侧商品列表中
+    const handleTabClick = (tab) => {
+        console.log('click', tab);
+        currentTab.value = tab;
+    };
+
+    return { currentTab, handleTabClick };
+};
+
+// 从后端获取商品列表相关内容的逻辑
+const useCurrentListEffect = (currentTab) => {
+    const route = useRoute();
+    const shopId = route.params.id;
+    const content = reactive({
+        // 代表右侧商品信息的列表
+        list: []
+    });
+
+    const getContentData = async () => {
+        const result = await get(`/api/shop/${shopId}/products`, { tab: currentTab.value });
+        if (result?.errorno === 0 && result?.data?.length) {
+            for (const item of result.data) {
+            item.imageUrl = getImgUrl(item.imageUrl)
+            }
+            content.list = result.data;
+        }
+    }
+
+    // 将getContnetData方法写到watchEffect中，vue会分析此方法外部依赖，如果依赖有变化，就会重新调用此方法来获取api的数据。
+    // 此getContentData依赖的就是currentTAb，只要用户选择的tab有变化就会重新调用此方法刷新数据。
+    // 刷新的数据就是contenat中的list，是响应式的数据，会实时显示在界面上
+    watchEffect(() => {
+        getContentData();
+    });
+
+    const { list } = toRefs(content);
+    return { list };
+};
+
+export default {
+    name: 'ContentPage',
+    setup () {
+        const { currentTab, handleTabClick } = useTabEffect();
+        const { list } = useCurrentListEffect(currentTab);
+
+        return { list, categories, currentTab, handleTabClick };
+    }
+}
 
 </script>
 
