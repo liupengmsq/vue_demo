@@ -102,7 +102,7 @@ const useCurrentListEffect = (currentTab) => {
 };
 
 export default {
-    name: 'ContentPage',
+    name: 'ContentPart',
     setup () {
         const { currentTab, handleTabClick } = useTabEffect();
         const { list } = useCurrentListEffect(currentTab);
