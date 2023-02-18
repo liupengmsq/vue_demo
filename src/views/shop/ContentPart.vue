@@ -22,8 +22,9 @@
                 </div>
                 <div class="product__item__number">
                     <span class="product__item__number__minus">-</span>
-                    0
-                    <span class="product__item__number__plus">+</span>
+                    {{ cartList?.[shopId]?.[item.id]?.count || 0 }}
+                    <span class="product__item__number__plus"
+                        @click="() => { addItemToCart(shopId, item.id, item) }">+</span>
                 </div>
             </div>
         </div>
@@ -33,6 +34,7 @@
 <script>
 import { reactive, toRefs, ref, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
+import { useStore } from 'vuex';
 import { get } from '../../utils/request.js';
 import { getImgUrl } from '../../utils/common';
 
@@ -71,10 +73,26 @@ const useTabEffect = () => {
     return { currentTab, handleTabClick };
 };
 
+// 购物车相关的逻辑
+const useCartEffect = () => {
+    const store = useStore();
+    // store中的数据vue会帮我们转换为reactive的类型，这里如果需要结构reactive类型的数据，就需要使用toRefs了
+    const { cartList } = toRefs(store.state);
+    const addItemToCart = (shopId, productId, product) => {
+        console.log(shopId, productId, product);
+        store.commit('addItemToCart', {
+            shopId,
+            productId,
+            product
+        });
+    }
+    return {
+        cartList, addItemToCart
+    };
+}
+
 // 从后端获取商品列表相关内容的逻辑
-const useCurrentListEffect = (currentTab) => {
-    const route = useRoute();
-    const shopId = route.params.id;
+const useCurrentListEffect = (currentTab, shopId) => {
     const content = reactive({
         // 代表右侧商品信息的列表
         list: []
@@ -84,7 +102,7 @@ const useCurrentListEffect = (currentTab) => {
         const result = await get(`/api/shop/${shopId}/products`, { tab: currentTab.value });
         if (result?.errorno === 0 && result?.data?.length) {
             for (const item of result.data) {
-            item.imageUrl = getImgUrl(item.imageUrl)
+                item.imageUrl = getImgUrl(item.imageUrl);
             }
             content.list = result.data;
         }
@@ -104,10 +122,21 @@ const useCurrentListEffect = (currentTab) => {
 export default {
     name: 'ContentPart',
     setup () {
+        const route = useRoute();
+        const shopId = route.params.id;
         const { currentTab, handleTabClick } = useTabEffect();
-        const { list } = useCurrentListEffect(currentTab);
+        const { list } = useCurrentListEffect(currentTab, shopId);
+        const { cartList, addItemToCart } = useCartEffect();
 
-        return { list, categories, currentTab, handleTabClick };
+        return {
+            list,
+            categories,
+            currentTab,
+            handleTabClick,
+            shopId,
+            cartList,
+            addItemToCart
+        };
     }
 }
 
