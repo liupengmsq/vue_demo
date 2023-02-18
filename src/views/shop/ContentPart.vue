@@ -21,7 +21,8 @@
                     </p>
                 </div>
                 <div class="product__item__number">
-                    <span class="product__item__number__minus">-</span>
+                    <span class="product__item__number__minus"
+                        @click="() => { removeItemFromCart(shopId, item.id) }">-</span>
                     {{ cartList?.[shopId]?.[item.id]?.count || 0 }}
                     <span class="product__item__number__plus"
                         @click="() => { addItemToCart(shopId, item.id, item) }">+</span>
@@ -86,8 +87,15 @@ const useCartEffect = () => {
             product
         });
     }
+    const removeItemFromCart = (shopId, productId) => {
+        console.log(shopId, productId);
+        store.commit('removeItemFromCart', {
+            shopId,
+            productId
+        });
+    }
     return {
-        cartList, addItemToCart
+        cartList, addItemToCart, removeItemFromCart
     };
 }
 
@@ -126,7 +134,7 @@ export default {
         const shopId = route.params.id;
         const { currentTab, handleTabClick } = useTabEffect();
         const { list } = useCurrentListEffect(currentTab, shopId);
-        const { cartList, addItemToCart } = useCartEffect();
+        const { cartList, addItemToCart, removeItemFromCart } = useCartEffect();
 
         return {
             list,
@@ -135,7 +143,8 @@ export default {
             handleTabClick,
             shopId,
             cartList,
-            addItemToCart
+            addItemToCart,
+            removeItemFromCart
         };
     }
 }

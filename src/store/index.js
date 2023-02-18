@@ -66,7 +66,32 @@ export default createStore({
       state.cartList[shopId] = shopInfo;
 
       console.log(state.cartList);
+    },
+
+    // 将一件商品从购物车移除的逻辑
+    removeItemFromCart (state, payload) {
+      const { shopId, productId } = payload;
+
+      const shopInfo = state.cartList[shopId];
+      // 商店信息没在store中，说明从来没加入过，所以不用继续执行了，直接退出即可
+      if (!shopInfo) {
+        console.log('找不到对应的shopId');
+        return;
+      }
+
+      const productInfo = shopInfo[productId];
+      // 商店下的商品信息没在store中，说明该商品从来没加入过，所以不用继续执行了，直接退出即可
+      if (!productInfo) {
+        console.log('找不到对应的productId');
+        return;
+      }
+
+      // 只在count大于0的时候将count减一，防止出现负数
+      if (productInfo.count > 0) {
+        productInfo.count -= 1;
+      }
     }
+
   },
   actions: {
   },
