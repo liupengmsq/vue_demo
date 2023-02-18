@@ -3,12 +3,12 @@
         <div class="check">
             <div class="check__icon">
                 <img class="check__icon__img" src="@/assets/images/basket.svg" alt="">
-                <div class="check__icon__tag">1</div>
+                <div class="check__icon__tag">{{ totalCountInCart }}</div>
             </div>
             <div class="check__info">
-                总计：<span class="check__info__price">&yen;128</span>
+                总计：<span class="check__info__price">&yen;{{ totalPriceInCart }}</span>
             </div>
-            <div class="check__btn">
+            <div class="check__btn" @click="countSumOfCart">
                 去结算
             </div>
         </div>
@@ -16,8 +16,19 @@
 </template>
 
 <script>
-export default {
+import { computed } from 'vue';
+import { useStore } from 'vuex';
 
+export default {
+    name: 'CartPart',
+    setup () {
+        const store = useStore();
+        return {
+            // 将购物车总数与总价格都加入计算属性中，当其值更改时会响应到UI上
+            totalCountInCart: computed(() => store.getters.getTotalCountInCart),
+            totalPriceInCart: computed(() => store.getters.getTotalPriceInCart.getValue())
+        }
+    }
 }
 </script>
 

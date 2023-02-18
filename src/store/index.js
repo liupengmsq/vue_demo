@@ -1,7 +1,14 @@
-import { createStore } from 'vuex'
+import { createStore } from 'vuex';
+import BigDecimal from 'js-big-decimal';
 
 export default createStore({
   state: {
+    // 购物车中的总价格，使用外部库的BigDecimal来计算小树
+    cartTotalPrice: new BigDecimal(0),
+
+    // 购物车中的商品数量
+    cartTotalCount: 0,
+
     // 保存购物车的数据
     cartList: {
       /*
@@ -34,6 +41,15 @@ export default createStore({
     }
   },
   getters: {
+    // 获取购物车中的商品数量
+    getTotalCountInCart (state) {
+      return state.cartTotalCount;
+    },
+
+    // 获取购物车商品的总价
+    getTotalPriceInCart (state) {
+      return state.cartTotalPrice;
+    }
   },
   mutations: {
     // 将一件商品加入购物车的逻辑
@@ -90,10 +106,70 @@ export default createStore({
       if (productInfo.count > 0) {
         productInfo.count -= 1;
       }
+    },
+
+    // 增加购物车的数量
+    increaseCountInCart (state) {
+      state.cartTotalCount += 1;
+    },
+
+    // 增加购物车的总价
+    increateTotalPricesInCart (state, newPrice) {
+      state.cartTotalPrice = state.cartTotalPrice.add(newPrice);
+    },
+
+    // 减少购物车的数量
+    decreaseCountInCart (state) {
+      if (state.cartTotalCount > 0) {
+        state.cartTotalCount -= 1;
+      }
+    },
+
+    // 减少购物车的总价
+    decreateTotalPricesInCart (state, newPrice) {
+      if (state.cartTotalPrice.subtract(newPrice).getValue() > 0) {
+        state.cartTotalPrice = state.cartTotalPrice.subtract(newPrice);
+      } else {
+        state.cartTotalPrice = new BigDecimal(0);
+      }
+      console.log('state.cartTotalPrice)', state.cartTotalPrice);
     }
 
   },
   actions: {
+    // 将一件商品加入购物车的逻辑
+    addItemToCart ({ commit }, payload) {
+      commit('addItemToCart', payload);
+      commit('increaseCountInCart');
+      commit('increateTotalPricesInCart', payload.product.price);
+    },
+
+    // 将一件商品从购物车移除的逻辑
+    removeItemFromCart ({ commit }, payload) {
+      commit('removeItemFromCart', payload);
+      commit('decreaseCountInCart');
+      commit('decreateTotalPricesInCart', payload.product.price);
+    },
+
+    // 返回对应商店的商品在购物车的数量
+    getProductCountInCart ({ state }, payload) {
+      const { shopId, productId } = payload;
+
+      const shopInfo = state.cartList[shopId];
+      // 商店信息没在store中，说明从来没加入过，所以不用继续执行了，直接退出即可
+      if (!shopInfo) {
+        console.log('找不到对应的shopId');
+        return 0;
+      }
+
+      const productInfo = shopInfo[productId];
+      // 商店下的商品信息没在store中，说明该商品从来没加入过，所以不用继续执行了，直接退出即可
+      if (!productInfo) {
+        console.log('找不到对应的productId');
+        return 0;
+      }
+      return productInfo.count;
+    }
   },
   modules: {
   }

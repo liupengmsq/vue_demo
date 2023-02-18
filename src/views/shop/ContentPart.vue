@@ -16,13 +16,13 @@
                     <h4 class="product__item__detail__title">{{ item.name }}</h4>
                     <p class="product__item__detail__sales">月售{{ item.sales }}件</p>
                     <p class="product__item__detail__price">
-                        <span class="product__item__detail__price__yen">&yen;</span>{{ item.price }}
+                        <span class="product__item__detail__price__yen">&yen;</span>{{ item.price.getValue() }}
                         <span class="product__item__detail__price__origin">&yen;{{ item.oldPrice }}</span>
                     </p>
                 </div>
                 <div class="product__item__number">
                     <span class="product__item__number__minus"
-                        @click="() => { removeItemFromCart(shopId, item.id) }">-</span>
+                        @click="() => { removeItemFromCart(shopId, item.id, item) }">-</span>
                     {{ cartList?.[shopId]?.[item.id]?.count || 0 }}
                     <span class="product__item__number__plus"
                         @click="() => { addItemToCart(shopId, item.id, item) }">+</span>
@@ -38,6 +38,7 @@ import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 import { get } from '../../utils/request.js';
 import { getImgUrl } from '../../utils/common';
+import BigDecimal from 'js-big-decimal';
 
 const categories = [
     {
@@ -79,19 +80,37 @@ const useCartEffect = () => {
     const store = useStore();
     // store中的数据vue会帮我们转换为reactive的类型，这里如果需要结构reactive类型的数据，就需要使用toRefs了
     const { cartList } = toRefs(store.state);
+
+    // 将当前的商店中的商品加入到购物车中
     const addItemToCart = (shopId, productId, product) => {
         console.log(shopId, productId, product);
-        store.commit('addItemToCart', {
+        store.dispatch('addItemToCart', {
             shopId,
             productId,
             product
         });
     }
-    const removeItemFromCart = (shopId, productId) => {
-        console.log(shopId, productId);
-        store.commit('removeItemFromCart', {
+
+    // 将当前的商店中的商品从购物车移除
+    const removeItemFromCart = (shopId, productId, product) => {
+        console.log(shopId, productId, product);
+
+        // 先获取当前选中的商品在购物车中的数量
+        // 如果数量currentProductCount大于0，说明当前商品在购物车中，可以继续调用removeItemFromCart将商品从购物车移除。
+        // 如果数量currentProductCount等于0，说明当前商品就不在购物车中，不需要继续后面的操作了。
+        store.dispatch('getProductCountInCart', {
             shopId,
-            productId
+            productId,
+            product
+        }).then(currentProductCount => {
+            console.log('currentProductCount: ', currentProductCount);
+            if (currentProductCount > 0) {
+                store.dispatch('removeItemFromCart', {
+                    shopId,
+                    productId,
+                    product
+                });
+            }
         });
     }
     return {
@@ -111,6 +130,10 @@ const useCurrentListEffect = (currentTab, shopId) => {
         if (result?.errorno === 0 && result?.data?.length) {
             for (const item of result.data) {
                 item.imageUrl = getImgUrl(item.imageUrl);
+
+                // 使用BigDecimal包裹从后端返回的价格，因为前端需要使用此类型更准确的计算价格
+                item.price = new BigDecimal(item.price);
+                console.log(item.price.getValue());
             }
             content.list = result.data;
         }
