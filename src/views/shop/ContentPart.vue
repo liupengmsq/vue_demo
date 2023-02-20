@@ -23,6 +23,7 @@
                 <div class="product__item__number">
                     <span class="product__item__number__minus"
                         @click="() => { removeItemFromCart(shopId, item.id, item) }">-</span>
+                        <!-- 注意！！ 这里需要从store.cartList中获取对应商品在购物车里的数量，而不是直接写成 {{ item.count }}, 因为这个item是从后端服务器获取到的，它没有购物车数量item.count字段，那么就会始终显示0 -->
                     {{ cartList?.[shopId]?.[item.id]?.count || 0 }}
                     <span class="product__item__number__plus"
                         @click="() => { addItemToCart(shopId, item.id, item) }">+</span>
@@ -39,6 +40,9 @@ import { useStore } from 'vuex';
 import { get } from '../../utils/request.js';
 import { getImgUrl } from '../../utils/common';
 import BigDecimal from 'js-big-decimal';
+
+// 使用封装到CartCommon模块中的方法
+import { addItemToCart, removeItemFromCart } from './CartCommon';
 
 const categories = [
     {
@@ -80,39 +84,6 @@ const useCartEffect = () => {
     const store = useStore();
     // store中的数据vue会帮我们转换为reactive的类型，这里如果需要结构reactive类型的数据，就需要使用toRefs了
     const { cartList } = toRefs(store.state);
-
-    // 将当前的商店中的商品加入到购物车中
-    const addItemToCart = (shopId, productId, product) => {
-        console.log(shopId, productId, product);
-        store.dispatch('addItemToCart', {
-            shopId,
-            productId,
-            product
-        });
-    }
-
-    // 将当前的商店中的商品从购物车移除
-    const removeItemFromCart = (shopId, productId, product) => {
-        console.log(shopId, productId, product);
-
-        // 先获取当前选中的商品在购物车中的数量
-        // 如果数量currentProductCount大于0，说明当前商品在购物车中，可以继续调用removeItemFromCart将商品从购物车移除。
-        // 如果数量currentProductCount等于0，说明当前商品就不在购物车中，不需要继续后面的操作了。
-        store.dispatch('getProductCountInCart', {
-            shopId,
-            productId,
-            product
-        }).then(currentProductCount => {
-            console.log('currentProductCount: ', currentProductCount);
-            if (currentProductCount > 0) {
-                store.dispatch('removeItemFromCart', {
-                    shopId,
-                    productId,
-                    product
-                });
-            }
-        });
-    }
     return {
         cartList, addItemToCart, removeItemFromCart
     };

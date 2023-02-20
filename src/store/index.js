@@ -49,6 +49,41 @@ export default createStore({
     // 获取购物车商品的总价
     getTotalPriceInCart (state) {
       return state.cartTotalPrice;
+    },
+
+    // 获取在购物车中所有产品的count不是0的产品列表
+    // 也就是当前购物车中有效的product lsit
+    getCurrentProductsInCart (state) {
+      console.log('current cart list: ', state.cartList);
+      const productInCart = [];
+
+      // 获取所有的shopId，并进行循环
+      const shopIdList = Object.keys(state.cartList);
+      shopIdList.forEach((shopId, index) => {
+        // 取得每个shopId对应的商品列表
+        console.log(`shopId=${shopId}: ${state.cartList[shopId]}`);
+        const productList = state.cartList[shopId];
+        const productIdList = Object.keys(productList);
+        console.log('productIdList: ', productIdList);
+
+        // 循环每个商品列表中的商品
+        productIdList.forEach((productId, index) => {
+          console.log(`productId=${productId}: ${productList[productId]}`);
+          const productInfo = productList[productId];
+
+          // 这里需要把当前商品所属的shopId带上，因为在购物车里的商品列表不能通过路由获取shopId，因为它指的
+          // 是当前页面的商店Id，而购物车中的商品不一定属于此商店。
+          productInfo.shopId = shopId;
+
+          console.log('productInfo: ', productInfo);
+
+          // 如果商品在购物车中的数量大于0，就加入结果中
+          if (productInfo.count > 0) {
+            productInCart.push(productInfo);
+          }
+        })
+      })
+      return productInCart;
     }
   },
   mutations: {

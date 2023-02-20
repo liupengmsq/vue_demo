@@ -1,5 +1,26 @@
 <template>
     <div class="cart">
+        <div class="product">
+            <div class="product__item" v-for="item in productListInCart" :key="item.id" >
+                <img class="product__item__img" :src="item.imageUrl">
+                <div class="product__item__detail">
+                    <h4 class="product__item__detail__title">{{ item.name }}</h4>
+                    <p class="product__item__detail__sales">月售{{ item.sales }}件</p>
+                    <p class="product__item__detail__price">
+                        <span class="product__item__detail__price__yen">&yen;</span>{{ item.price.getValue() }}
+                        <span class="product__item__detail__price__origin">&yen;{{ item.oldPrice }}</span>
+                    </p>
+                </div>
+                <div class="product__item__number">
+                    <!-- 注意！！ 这里传入的shopId不能去路由中的shopId，因为购物车中可以包含其他商店的商品。所以这里的shopId是从store.getters.getCurrentProductsInCart返回的shopId，是商品所属的商店Id -->
+                    <span class="product__item__number__minus"
+                        @click="() => { removeItemFromCart(item.shopId, item.id, item) }">-</span>
+                    {{ item.count || 0 }}
+                    <span class="product__item__number__plus"
+                        @click="() => { addItemToCart(item.shopId, item.id, item) }">+</span>
+                </div>
+            </div>
+        </div>
         <div class="check">
             <div class="check__icon">
                 <img class="check__icon__img" src="@/assets/images/basket.svg" alt="">
@@ -8,7 +29,7 @@
             <div class="check__info">
                 总计：<span class="check__info__price">&yen;{{ totalPriceInCart }}</span>
             </div>
-            <div class="check__btn" @click="countSumOfCart">
+            <div class="check__btn">
                 去结算
             </div>
         </div>
@@ -19,14 +40,23 @@
 import { computed } from 'vue';
 import { useStore } from 'vuex';
 
+// 使用封装到CartCommon模块中的方法
+import { addItemToCart, removeItemFromCart } from './CartCommon';
+
 export default {
     name: 'CartPart',
     setup () {
         const store = useStore();
+
         return {
             // 将购物车总数与总价格都加入计算属性中，当其值更改时会响应到UI上
             totalCountInCart: computed(() => store.getters.getTotalCountInCart),
-            totalPriceInCart: computed(() => store.getters.getTotalPriceInCart.getValue())
+            totalPriceInCart: computed(() => store.getters.getTotalPriceInCart.getValue()),
+
+            // 获取购物车中有效的商品列表，每个商品特意添加了其所属商店的shopId。
+            productListInCart: computed(() => store.getters.getCurrentProductsInCart),
+            addItemToCart,
+            removeItemFromCart
         }
     }
 }
@@ -34,6 +64,7 @@ export default {
 
 <style lang="scss" scoped>
 @import '@/style/variables.scss';
+@import '../../style/mixins.scss';
 
 .cart {
     position: absolute;
@@ -87,6 +118,79 @@ export default {
         color: #FFF;
         font-size: .14rem;
         text-align: center;
+    }
+}
+.product {
+    overflow-y: scroll; // 设置内容超出所在区域后如何处理，这里设置的是显示滚动条
+    flex: 1;
+    background: #FFF;
+    &__item {
+        position: relative;
+        display: flex;
+        padding: .12rem 0;
+        margin: 0 .16rem;
+        border-bottom: .01rem solid $content-bgColor;
+        &__img {
+            width: .46rem;
+            height: .46rem;
+            margin-right: .16rem;
+        }
+        &__detail {
+            overflow: hidden;
+            &__title {
+                margin: 0;
+                line-height: .2rem;
+                font-size: .14rem;
+                color: $content-fontcolor;
+                @include ellipsis;
+            }
+            &__sales {
+                margin: .06rem 0;
+                line-height: .16rem;
+                font-size: .12rem;
+                color: $content-fontcolor;
+            }
+            &__price {
+                margin: .06rem 0 0 0;
+                line-height: .2rem;
+                font-size: .14rem;
+                color: $hightlight-fontColor;
+                &__yen {
+                    font-size: .12rem;
+                }
+                &__origin {
+                    line-height: .2rem;
+                    font-size: .12rem;
+                    color: $light-fontColor;
+                    text-decoration: line-through;
+                }
+            }
+        }
+        &__number {
+            position: absolute;
+            right: 0;
+            bottom: .2rem;
+            &__minus, &__plus {
+                display: inline-block;
+                width: .2rem;
+                line-height: .16rem;
+                height: .2rem;
+                border-radius: 50%;
+                border: .01rem solid $medium-fontColor;
+                font-size: .2rem;
+                text-align: center;
+            }
+            &__minus {
+                border: .01rem solid $medium-fontColor;
+                color: $medium-fontColor;
+                margin-right: .05rem;
+            }
+            &__plus {
+                background: $btn-bgColor;
+                color: $search-bgColor;
+                margin-left: .05rem;
+            }
+        }
     }
 }
 </style>
