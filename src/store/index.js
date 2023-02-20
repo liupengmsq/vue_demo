@@ -3,12 +3,6 @@ import BigDecimal from 'js-big-decimal';
 
 export default createStore({
   state: {
-    // 购物车中的总价格，使用外部库的BigDecimal来计算小树
-    cartTotalPrice: new BigDecimal(0),
-
-    // 购物车中的商品数量
-    cartTotalCount: 0,
-
     // 保存购物车的数据
     cartList: {
       /*
@@ -42,13 +36,23 @@ export default createStore({
   },
   getters: {
     // 获取购物车中的商品数量
-    getTotalCountInCart (state) {
-      return state.cartTotalCount;
+    getTotalCountInCart (state, getters) {
+      const currentPrudcts = getters.getCurrentProductsInCart;
+      let total = 0;
+      currentPrudcts.forEach(product => {
+        total += product.count;
+      });
+      return total;
     },
 
-    // 获取购物车商品的总价
-    getTotalPriceInCart (state) {
-      return state.cartTotalPrice;
+    // 购物车中的总价格，使用外部库的BigDecimal来计算小数
+    getTotalPriceInCart (state, getters) {
+      const currentPrudcts = getters.getCurrentProductsInCart;
+      let total = new BigDecimal(0);
+      currentPrudcts.forEach(product => {
+        total = total.add(product.price.multiply(new BigDecimal(product.count)));
+      });
+      return total;
     },
 
     // 获取在购物车中所有产品的count不是0的产品列表
@@ -141,49 +145,17 @@ export default createStore({
       if (productInfo.count > 0) {
         productInfo.count -= 1;
       }
-    },
-
-    // 增加购物车的数量
-    increaseCountInCart (state) {
-      state.cartTotalCount += 1;
-    },
-
-    // 增加购物车的总价
-    increateTotalPricesInCart (state, newPrice) {
-      state.cartTotalPrice = state.cartTotalPrice.add(newPrice);
-    },
-
-    // 减少购物车的数量
-    decreaseCountInCart (state) {
-      if (state.cartTotalCount > 0) {
-        state.cartTotalCount -= 1;
-      }
-    },
-
-    // 减少购物车的总价
-    decreateTotalPricesInCart (state, newPrice) {
-      if (state.cartTotalPrice.subtract(newPrice).getValue() > 0) {
-        state.cartTotalPrice = state.cartTotalPrice.subtract(newPrice);
-      } else {
-        state.cartTotalPrice = new BigDecimal(0);
-      }
-      console.log('state.cartTotalPrice)', state.cartTotalPrice);
     }
-
   },
   actions: {
     // 将一件商品加入购物车的逻辑
     addItemToCart ({ commit }, payload) {
       commit('addItemToCart', payload);
-      commit('increaseCountInCart');
-      commit('increateTotalPricesInCart', payload.product.price);
     },
 
     // 将一件商品从购物车移除的逻辑
     removeItemFromCart ({ commit }, payload) {
       commit('removeItemFromCart', payload);
-      commit('decreaseCountInCart');
-      commit('decreateTotalPricesInCart', payload.product.price);
     },
 
     // 返回对应商店的商品在购物车的数量
