@@ -40,7 +40,9 @@ export default createStore({
       const currentPrudcts = getters.getCurrentProductsInCart;
       let total = 0;
       currentPrudcts.forEach(product => {
-        total += product.count;
+        if (product.checked) {
+          total += product.count;
+        }
       });
       return total;
     },
@@ -50,7 +52,9 @@ export default createStore({
       const currentPrudcts = getters.getCurrentProductsInCart;
       let total = new BigDecimal(0);
       currentPrudcts.forEach(product => {
-        total = total.add(product.price.multiply(new BigDecimal(product.count)));
+        if (product.checked) {
+          total = total.add(product.price.multiply(new BigDecimal(product.count)));
+        }
       });
       return total;
     },
@@ -113,6 +117,9 @@ export default createStore({
 
       // 将count加一
       productInfo.count += 1;
+
+      // checked表示在购物车计算时是否计算在内，默认是true
+      productInfo.checked = true;
 
       // 设置正确的数据结构，将商店下对应的产品id映射到对应的产品对象上来
       shopInfo[productId] = productInfo;

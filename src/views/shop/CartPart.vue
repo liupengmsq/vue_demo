@@ -2,6 +2,12 @@
     <div class="cart">
         <div class="product">
             <div class="product__item" v-for="item in productListInCart" :key="item.id" >
+                <!-- 使用item.checked是否为true来决定展示哪个字体图标。并在click的时候将checked的true或false替换  -->
+                <div class="product__item__checked iconfont"
+                    v-html="item.checked ? '&#xe618;' : '&#xe66c;'"
+                    @click="() => { item.checked = !item.checked }">
+                </div>
+
                 <img class="product__item__img" :src="item.imageUrl">
                 <div class="product__item__detail">
                     <h4 class="product__item__detail__title">{{ item.name }}</h4>
@@ -130,6 +136,12 @@ export default {
         padding: .12rem 0;
         margin: 0 .16rem;
         border-bottom: .01rem solid $content-bgColor;
+        &__checked {
+            line-height: .5rem;
+            margin-right: .2rem;
+            color: #0091FF;
+            font-size: .2rem;
+        }
         &__img {
             width: .46rem;
             height: .46rem;
