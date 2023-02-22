@@ -1,5 +1,6 @@
 <template>
-    <div class="mask" v-if="showCart"></div>
+    <!-- 点击蒙层的时候会自动将购物车隐藏掉 -->
+    <div class="mask" v-if="showCart" @click="handleCartShowChange"></div>
     <div class="cart">
         <div class="product" v-if="showCart">
             <div class="product__header">
@@ -61,44 +62,82 @@ import { useStore } from 'vuex';
 // 使用封装到CartCommon模块中的方法
 import { addItemToCart, removeItemFromCart } from './CartCommon';
 
+// 购物车相关的逻辑
+const useCartEffect = () => {
+    const store = useStore();
+
+    // 将购物车总数与总价格都加入计算属性中，当其值更改时会响应到UI上
+    const totalCountInCart = computed(() => store.getters.getTotalCountInCart);
+    const totalPriceInCart = computed(() => store.getters.getTotalPriceInCart.getValue());
+
+    // 获取购物车中有效的商品列表，每个商品特意添加了其所属商店的shopId。
+    const productListInCart = computed(() => store.getters.getCurrentProductsInCart);
+
+    // 购物车中的商品全部取消选中
+    const toggleCheckAllProductsInCart = () => {
+        if (store.getters.allProductsInCartHaveBeenChecked) {
+            // uncheck all
+            store.dispatch('unCheckAllProductsInCart');
+        } else {
+            // check all
+            store.dispatch('checkAllProductsInCart');
+        }
+    };
+
+    // 将所有商品从购物车移除的逻辑
+    const removeAllItemsFromCart = () => {
+        store.dispatch('removeAllItemsFromCart');
+    };
+
+    // 获取购物车中是否所有商品都被选中了的boolean结果
+    const allProductsHaveBeenCheckedInCart = computed(() => store.getters.allProductsInCartHaveBeenChecked);
+
+    return {
+        totalCountInCart,
+        totalPriceInCart,
+        productListInCart,
+        addItemToCart,
+        removeItemFromCart,
+        toggleCheckAllProductsInCart,
+        removeAllItemsFromCart,
+        allProductsHaveBeenCheckedInCart
+    }
+}
+
+// 展示与隐藏购物车的逻辑
+const toggleCartEffect = () => {
+    // 表示是否显示购物车的页面
+    const showCart = ref(false);
+
+    // 更改购物车显示与否的状态
+    const handleCartShowChange = () => {
+        showCart.value = !showCart.value;
+    }
+
+    return {
+        showCart,
+        handleCartShowChange
+    }
+}
+
 export default {
     name: 'CartPart',
     setup () {
-        const store = useStore();
+        const {
+            totalCountInCart,
+            totalPriceInCart,
+            productListInCart,
+            addItemToCart,
+            removeItemFromCart,
+            toggleCheckAllProductsInCart,
+            removeAllItemsFromCart,
+            allProductsHaveBeenCheckedInCart
+        } = useCartEffect();
 
-        // 将购物车总数与总价格都加入计算属性中，当其值更改时会响应到UI上
-        const totalCountInCart = computed(() => store.getters.getTotalCountInCart);
-        const totalPriceInCart = computed(() => store.getters.getTotalPriceInCart.getValue());
-
-        // 获取购物车中有效的商品列表，每个商品特意添加了其所属商店的shopId。
-        const productListInCart = computed(() => store.getters.getCurrentProductsInCart);
-
-        // 表示是否显示购物车的页面
-        const showCart = ref(false);
-
-        // 更改购物车显示与否的状态
-        const handleCartShowChange = () => {
-            showCart.value = !showCart.value;
-        }
-
-        // 购物车中的商品全部取消选中
-        const toggleCheckAllProductsInCart = () => {
-            if (store.getters.allProductsInCartHaveBeenChecked) {
-                // uncheck all
-                store.dispatch('unCheckAllProductsInCart');
-            } else {
-                // check all
-                store.dispatch('checkAllProductsInCart');
-            }
-        };
-
-        // 将所有商品从购物车移除的逻辑
-        const removeAllItemsFromCart = () => {
-            store.dispatch('removeAllItemsFromCart');
-        };
-
-        // 获取购物车中是否所有商品都被选中了的boolean结果
-        const allProductsHaveBeenCheckedInCart = computed(() => store.getters.allProductsInCartHaveBeenChecked);
+        const {
+            showCart,
+            handleCartShowChange
+        } = toggleCartEffect();
 
         return {
             totalCountInCart,
@@ -135,7 +174,7 @@ export default {
     left: 0;
     right: 0;
     bottom: 0;
-    background: #FFF;
+    background: $bgColor;
     z-index: 2;
 
     // 设置购物车的最大高度是80%，超出后显示滚动条
@@ -167,7 +206,7 @@ export default {
             border-radius: 50%;
             font-size: .12rem;
             text-align: center;
-            color: #fff;
+            color: $bgColor;
             transform: scale(.5);
         }
     }
@@ -185,7 +224,7 @@ export default {
         width: .98rem;
         line-height: .49rem;
         background-color: #4FB0F9;
-        color: #FFF;
+        color: $bgColor;
         font-size: .14rem;
         text-align: center;
     }
@@ -193,25 +232,25 @@ export default {
 .product {
     overflow-y: scroll; // 设置内容超出所在区域后如何处理，这里设置的是显示滚动条
     flex: 1;
-    background: #FFF;
+    background: $bgColor;
     &__header {
         display: flex;
         line-height: .52rem;
-        border-bottom: 1px solid #F1F1F1;
+        border-bottom: 1px solid $content-bgColor;
         &__all {
             display: flex;
             width: .64rem;
             font-size: .14rem;
             flex: 1;
             margin-left: .16rem;
-            color: #333;
+            color: $content-fontcolor;
         }
         &__clear {
             // flex: 1;
             margin-right: .16rem;
             text-align: right;
             font-size: .14rem;
-            color: #333;
+            color: $content-fontcolor;
         }
 
     }
