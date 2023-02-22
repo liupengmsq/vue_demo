@@ -1,6 +1,18 @@
 <template>
+    <div class="mask" v-if="showCart"></div>
     <div class="cart">
-        <div class="product">
+        <div class="product" v-if="showCart">
+            <div class="product__header">
+                <div class="product__header__all" @click="toggleCheckAllProductsInCart">
+                    <!-- 使用allProductsHaveBeenCheckedInCart决定显示checked还是unchecked的字体图标 -->
+                    <div class="product__item__checked iconfont"
+                        v-html="allProductsHaveBeenCheckedInCart ? '&#xe618;' : '&#xe66c;'"
+                    >
+                    </div>
+                    全选
+                </div>
+                <div class="product__header__clear" @click="removeAllItemsFromCart">清空购物车</div>
+            </div>
             <div class="product__item" v-for="item in productListInCart" :key="item.id" >
                 <!-- 使用item.checked是否为true来决定展示哪个字体图标。并在click的时候将checked的true或false替换  -->
                 <div class="product__item__checked iconfont"
@@ -29,7 +41,7 @@
         </div>
         <div class="check">
             <div class="check__icon">
-                <img class="check__icon__img" src="@/assets/images/basket.svg" alt="">
+                <img class="check__icon__img" src="@/assets/images/basket.svg" alt="" @click="handleCartShowChange">
                 <div class="check__icon__tag">{{ totalCountInCart }}</div>
             </div>
             <div class="check__info">
@@ -43,7 +55,7 @@
 </template>
 
 <script>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useStore } from 'vuex';
 
 // 使用封装到CartCommon模块中的方法
@@ -54,15 +66,51 @@ export default {
     setup () {
         const store = useStore();
 
-        return {
-            // 将购物车总数与总价格都加入计算属性中，当其值更改时会响应到UI上
-            totalCountInCart: computed(() => store.getters.getTotalCountInCart),
-            totalPriceInCart: computed(() => store.getters.getTotalPriceInCart.getValue()),
+        // 将购物车总数与总价格都加入计算属性中，当其值更改时会响应到UI上
+        const totalCountInCart = computed(() => store.getters.getTotalCountInCart);
+        const totalPriceInCart = computed(() => store.getters.getTotalPriceInCart.getValue());
 
-            // 获取购物车中有效的商品列表，每个商品特意添加了其所属商店的shopId。
-            productListInCart: computed(() => store.getters.getCurrentProductsInCart),
+        // 获取购物车中有效的商品列表，每个商品特意添加了其所属商店的shopId。
+        const productListInCart = computed(() => store.getters.getCurrentProductsInCart);
+
+        // 表示是否显示购物车的页面
+        const showCart = ref(false);
+
+        // 更改购物车显示与否的状态
+        const handleCartShowChange = () => {
+            showCart.value = !showCart.value;
+        }
+
+        // 购物车中的商品全部取消选中
+        const toggleCheckAllProductsInCart = () => {
+            if (store.getters.allProductsInCartHaveBeenChecked) {
+                // uncheck all
+                store.dispatch('unCheckAllProductsInCart');
+            } else {
+                // check all
+                store.dispatch('checkAllProductsInCart');
+            }
+        };
+
+        // 将所有商品从购物车移除的逻辑
+        const removeAllItemsFromCart = () => {
+            store.dispatch('removeAllItemsFromCart');
+        };
+
+        // 获取购物车中是否所有商品都被选中了的boolean结果
+        const allProductsHaveBeenCheckedInCart = computed(() => store.getters.allProductsInCartHaveBeenChecked);
+
+        return {
+            totalCountInCart,
+            totalPriceInCart,
+            productListInCart,
             addItemToCart,
-            removeItemFromCart
+            removeItemFromCart,
+            toggleCheckAllProductsInCart,
+            removeAllItemsFromCart,
+            allProductsHaveBeenCheckedInCart,
+            showCart,
+            handleCartShowChange
         }
     }
 }
@@ -72,11 +120,23 @@ export default {
 @import '@/style/variables.scss';
 @import '../../style/mixins.scss';
 
+.mask {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    background: rgba(0,0,0,.5);
+    z-index: 1;
+}
+
 .cart {
     position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
+    background: #FFF;
+    z-index: 2;
 }
 
 .check {
@@ -130,6 +190,27 @@ export default {
     overflow-y: scroll; // 设置内容超出所在区域后如何处理，这里设置的是显示滚动条
     flex: 1;
     background: #FFF;
+    &__header {
+        display: flex;
+        line-height: .52rem;
+        border-bottom: 1px solid #F1F1F1;
+        &__all {
+            display: flex;
+            width: .64rem;
+            font-size: .14rem;
+            flex: 1;
+            margin-left: .16rem;
+            color: #333;
+        }
+        &__clear {
+            // flex: 1;
+            margin-right: .16rem;
+            text-align: right;
+            font-size: .14rem;
+            color: #333;
+        }
+
+    }
     &__item {
         position: relative;
         display: flex;

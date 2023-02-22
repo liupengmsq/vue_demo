@@ -92,6 +92,23 @@ export default createStore({
         })
       })
       return productInCart;
+    },
+
+    allProductsInCartHaveBeenChecked (state, getters) {
+      const currentPrudcts = getters.getCurrentProductsInCart;
+      let allChecked = true;
+
+      // 注意这里的array#forEach里面如果写了return会被忽略掉：
+      // because array#forEach simply does not care for the return value of its worker
+      // function. It just executes the worker function for each array element.
+      currentPrudcts.forEach(product => {
+        if (!product.checked) {
+          console.log('allProductsInCartHaveBeenChecked', product, false);
+          allChecked = false;
+        }
+      });
+      console.log('allProductsInCartHaveBeenChecked', allChecked);
+      return allChecked;
     }
   },
   mutations: {
@@ -152,6 +169,29 @@ export default createStore({
       if (productInfo.count > 0) {
         productInfo.count -= 1;
       }
+    },
+
+    // 将所有商品从购物车移除的逻辑
+    removeAllItemsFromCart (state, { getters }) {
+      const currentPrudcts = getters.getCurrentProductsInCart;
+      currentPrudcts.forEach(product => {
+        product.count = 0;
+      });
+    },
+
+    // 购物车中的商品全部选中
+    checkAllFromChart (state, { getters }) {
+      const currentPrudcts = getters.getCurrentProductsInCart;
+      currentPrudcts.forEach(product => {
+        product.checked = true;
+      });
+    },
+    // 购物车中的商品全部取消选中
+    unCheckAllFromChart (state, { getters }) {
+      const currentPrudcts = getters.getCurrentProductsInCart;
+      currentPrudcts.forEach(product => {
+        product.checked = false;
+      });
     }
   },
   actions: {
@@ -163,6 +203,11 @@ export default createStore({
     // 将一件商品从购物车移除的逻辑
     removeItemFromCart ({ commit }, payload) {
       commit('removeItemFromCart', payload);
+    },
+
+    // 将所有商品从购物车移除的逻辑
+    removeAllItemsFromCart ({ commit, getters }) {
+      commit('removeAllItemsFromCart', { getters });
     },
 
     // 返回对应商店的商品在购物车的数量
@@ -183,6 +228,16 @@ export default createStore({
         return 0;
       }
       return productInfo.count;
+    },
+
+    // 购物车中的商品全部选中
+    checkAllProductsInCart ({ commit, getters }) {
+      commit('checkAllFromChart', { getters });
+    },
+
+    // 购物车中的商品全部取消选中
+    unCheckAllProductsInCart ({ commit, getters }) {
+      commit('unCheckAllFromChart', { getters });
     }
   },
   modules: {
