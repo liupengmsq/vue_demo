@@ -137,6 +137,10 @@ export default {
     bottom: 0;
     background: #FFF;
     z-index: 2;
+
+    // 设置购物车的最大高度是80%，超出后显示滚动条
+    overflow-y: scroll;
+    max-height: 80%;
 }
 
 .check {
