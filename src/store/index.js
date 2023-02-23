@@ -8,21 +8,25 @@ export default createStore({
       /*
       // 购入车第一层存放的是shop id，就是一个商店的id
       shopId_a: {
+        shopName: '沃尔玛',
         // 购物车第二层存放的是该商店下的用户选择的商品信息，与购买的数量
-        productId_a: {
-          name: '番茄250g/份 for 1-all',
-          imageUrl: 'near.png',
-          sales: 10,
-          price: 33.6,
-          oldPrice: 43.6,
-          count: 2 // 购买次商品的数量
-        },
-        productId_b: {
-          ...
-        },
-        productId_c: {
-          ...
-        },
+        productList: {
+          productId_a: {
+            name: '番茄250g/份 for 1-all',
+            imageUrl: 'near.png',
+            sales: 10,
+            price: 33.6,
+            oldPrice: 43.6,
+            count: 2, // 购买次商品的数量
+            check: true //是否在购物车中被选中
+          },
+          productId_b: {
+            ...
+          },
+          productId_c: {
+            ...
+          },
+        }
       },
       shopId_b: {
 
@@ -70,18 +74,20 @@ export default createStore({
       shopIdList.forEach((shopId, index) => {
         // 取得每个shopId对应的商品列表
         console.log(`shopId=${shopId}: ${state.cartList[shopId]}`);
-        const productList = state.cartList[shopId];
-        const productIdList = Object.keys(productList);
+        const shopInfo = state.cartList[shopId];
+        const shopName = shopInfo.shopName;
+        const productIdList = Object.keys(shopInfo.productList);
         console.log('productIdList: ', productIdList);
 
         // 循环每个商品列表中的商品
         productIdList.forEach((productId, index) => {
-          console.log(`productId=${productId}: ${productList[productId]}`);
-          const productInfo = productList[productId];
+          console.log(`productId=${productId}: ${shopInfo.productList[productId]}`);
+          const productInfo = shopInfo.productList[productId];
 
           // 这里需要把当前商品所属的shopId带上，因为在购物车里的商品列表不能通过路由获取shopId，因为它指的
           // 是当前页面的商店Id，而购物车中的商品不一定属于此商店。
           productInfo.shopId = shopId;
+          productInfo.shopName = shopName;
 
           console.log('productInfo: ', productInfo);
 
@@ -114,7 +120,10 @@ export default createStore({
   mutations: {
     // 将一件商品加入购物车的逻辑
     addItemToCart (state, payload) {
-      const { shopId, productId, product } = payload;
+      const { shopId, shopName, productId, product } = payload;
+
+      console.log(shopId, shopName, productId, product);
+      console.log('current cart list before adding new: ', state.cartList);
 
       // 从carList中获取对应的shopInfo，
       // shopInfo表示当前这个商店中多有产品的信息
@@ -122,10 +131,12 @@ export default createStore({
       // carList中如果没有对应的shopId，就new一个新的对象
       if (!shopInfo) {
         shopInfo = {};
+        shopInfo.shopName = shopName;
+        shopInfo.productList = {};
       }
 
       // 从shopInfo中获取对应的商品信息对象
-      let productInfo = shopInfo[productId];
+      let productInfo = shopInfo.productList[productId];
       // 如果对应商店中没有对应的产品，就将传入的product对象作为新的对象写入store中
       if (!productInfo) {
         productInfo = product;
@@ -139,7 +150,7 @@ export default createStore({
       productInfo.checked = true;
 
       // 设置正确的数据结构，将商店下对应的产品id映射到对应的产品对象上来
-      shopInfo[productId] = productInfo;
+      shopInfo.productList[productId] = productInfo;
 
       // 设置正确的数据结构，将购物车下对应的商店id映射到对应的店铺对象上来
       state.cartList[shopId] = shopInfo;
@@ -158,7 +169,7 @@ export default createStore({
         return;
       }
 
-      const productInfo = shopInfo[productId];
+      const productInfo = shopInfo.productList[productId];
       // 商店下的商品信息没在store中，说明该商品从来没加入过，所以不用继续执行了，直接退出即可
       if (!productInfo) {
         console.log('找不到对应的productId');
@@ -221,7 +232,7 @@ export default createStore({
         return 0;
       }
 
-      const productInfo = shopInfo[productId];
+      const productInfo = shopInfo.productList[productId];
       // 商店下的商品信息没在store中，说明该商品从来没加入过，所以不用继续执行了，直接退出即可
       if (!productInfo) {
         console.log('找不到对应的productId');

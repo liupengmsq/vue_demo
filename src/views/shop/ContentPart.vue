@@ -24,9 +24,9 @@
                     <span class="product__item__number__minus"
                         @click="() => { removeItemFromCart(shopId, item.id, item) }">-</span>
                         <!-- 注意！！ 这里需要从store.cartList中获取对应商品在购物车里的数量，而不是直接写成 {{ item.count }}, 因为这个item是从后端服务器获取到的，它没有购物车数量item.count字段，那么就会始终显示0 -->
-                    {{ cartList?.[shopId]?.[item.id]?.count || 0 }}
+                    {{ cartList?.[shopId]?.productList?.[item.id]?.count || 0 }}
                     <span class="product__item__number__plus"
-                        @click="() => { addItemToCart(shopId, item.id, item) }">+</span>
+                        @click="() => { addItemToCart(shopId, shopName, item.id, item) }">+</span>
                 </div>
             </div>
         </div>
@@ -123,6 +123,7 @@ const useCurrentListEffect = (currentTab, shopId) => {
 
 export default {
     name: 'ContentPart',
+    props: ['shopName'],
     setup () {
         const route = useRoute();
         const shopId = route.params.id;

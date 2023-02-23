@@ -36,7 +36,7 @@
                         @click="() => { removeItemFromCart(item.shopId, item.id, item) }">-</span>
                     {{ item.count || 0 }}
                     <span class="product__item__number__plus"
-                        @click="() => { addItemToCart(item.shopId, item.id, item) }">+</span>
+                        @click="() => { addItemToCart(item.shopId, item.shopName, item.id, item) }">+</span>
                 </div>
             </div>
         </div>
@@ -48,9 +48,11 @@
             <div class="check__info">
                 总计：<span class="check__info__price">&yen;{{ totalPriceInCart }}</span>
             </div>
-            <div class="check__btn">
-                去结算
-            </div>
+            <router-link to="/">
+                <div class="check__btn">
+                    去结算
+                </div>
+            </router-link>
         </div>
     </div>
 </template>
@@ -227,6 +229,9 @@ export default {
         color: $bgColor;
         font-size: .14rem;
         text-align: center;
+    }
+    a {
+        text-decoration: none;
     }
 }
 .product {

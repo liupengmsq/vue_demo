@@ -10,7 +10,7 @@
         <!-- 为了防止当网速慢的时候图片没加载出来，在页面上显示一个红叉，这里使用v-show控制，只当图片加载完成后才显示整个的shopinfo组建 -->
         <ShopInfo :item="item" :showBorder="false" v-show="item.imageUrl" />
     </div>
-    <Content />
+    <Content :shopName="item.name" />
     <Cart />
 </template>
 

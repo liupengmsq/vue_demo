@@ -1,10 +1,11 @@
 import store from '@/store';
 
 // 将当前的商店中的商品加入到购物车中
-export const addItemToCart = (shopId, productId, product) => {
+export const addItemToCart = (shopId, shopName, productId, product) => {
     console.log(shopId, productId, product);
     store.dispatch('addItemToCart', {
         shopId,
+        shopName,
         productId,
         product
     });
