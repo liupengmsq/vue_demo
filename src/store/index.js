@@ -1,10 +1,25 @@
 import { createStore } from 'vuex';
 import BigDecimal from 'js-big-decimal';
 
+// 将购物车持久化到浏览器的localStorage中
+const saveCartListToLocalStorage = (state) => {
+  const { cartList } = state;
+  const cartListString = JSON.stringify(cartList);
+  localStorage.cartList = cartListString;
+}
+
+// 从浏览器的localStorage中获取购物车数据
+const getCartListFromLocalStorage = () => {
+  if (localStorage.cartList) {
+    return JSON.parse(localStorage.cartList);
+  }
+  return {};
+}
+
 export default createStore({
   state: {
     // 保存购物车的数据
-    cartList: {
+    cartList: getCartListFromLocalStorage()
       /*
       // 购入车第一层存放的是shop id，就是一个商店的id
       shopId_a: {
@@ -36,7 +51,6 @@ export default createStore({
       },
       ...
     */
-    }
   },
   getters: {
     // 获取购物车中的商品数量
@@ -156,6 +170,7 @@ export default createStore({
       state.cartList[shopId] = shopInfo;
 
       console.log(state.cartList);
+      saveCartListToLocalStorage(state);
     },
 
     // 将一件商品从购物车移除的逻辑
@@ -180,6 +195,7 @@ export default createStore({
       if (productInfo.count > 0) {
         productInfo.count -= 1;
       }
+      saveCartListToLocalStorage(state);
     },
 
     // 将所有商品从购物车移除的逻辑
@@ -188,6 +204,7 @@ export default createStore({
       currentPrudcts.forEach(product => {
         product.count = 0;
       });
+      saveCartListToLocalStorage(state);
     },
 
     // 购物车中的商品全部选中
@@ -196,6 +213,7 @@ export default createStore({
       currentPrudcts.forEach(product => {
         product.checked = true;
       });
+      saveCartListToLocalStorage(state);
     },
     // 购物车中的商品全部取消选中
     unCheckAllFromChart (state, { getters }) {
@@ -203,6 +221,7 @@ export default createStore({
       currentPrudcts.forEach(product => {
         product.checked = false;
       });
+      saveCartListToLocalStorage(state);
     }
   },
   actions: {
@@ -249,6 +268,11 @@ export default createStore({
     // 购物车中的商品全部取消选中
     unCheckAllProductsInCart ({ commit, getters }) {
       commit('unCheckAllFromChart', { getters });
+    },
+
+    // 将购物车当前的数据持久化到浏览器的localstorage中
+    saveCartList ({ state }) {
+      saveCartListToLocalStorage(state);
     }
   },
   modules: {

@@ -18,7 +18,10 @@
                 <!-- 使用item.checked是否为true来决定展示哪个字体图标。并在click的时候将checked的true或false替换  -->
                 <div class="product__item__checked iconfont"
                     v-html="item.checked ? '&#xe618;' : '&#xe66c;'"
-                    @click="() => { item.checked = !item.checked }">
+                    @click="() => {
+                        item.checked = !item.checked;
+                        saveToLocalStorage();
+                    }">
                 </div>
 
                 <img class="product__item__img" :src="item.imageUrl">
@@ -94,6 +97,10 @@ const useCartEffect = () => {
     // 获取购物车中是否所有商品都被选中了的boolean结果
     const allProductsHaveBeenCheckedInCart = computed(() => store.getters.allProductsInCartHaveBeenChecked);
 
+    const saveToLocalStorage = () => {
+        store.dispatch('saveCartList');
+    };
+
     return {
         totalCountInCart,
         totalPriceInCart,
@@ -102,7 +109,8 @@ const useCartEffect = () => {
         removeItemFromCart,
         toggleCheckAllProductsInCart,
         removeAllItemsFromCart,
-        allProductsHaveBeenCheckedInCart
+        allProductsHaveBeenCheckedInCart,
+        saveToLocalStorage
     }
 }
 
@@ -133,7 +141,8 @@ export default {
             removeItemFromCart,
             toggleCheckAllProductsInCart,
             removeAllItemsFromCart,
-            allProductsHaveBeenCheckedInCart
+            allProductsHaveBeenCheckedInCart,
+            saveToLocalStorage
         } = useCartEffect();
 
         const {
@@ -150,6 +159,7 @@ export default {
             toggleCheckAllProductsInCart,
             removeAllItemsFromCart,
             allProductsHaveBeenCheckedInCart,
+            saveToLocalStorage,
             showCart,
             handleCartShowChange
         }
