@@ -16,7 +16,7 @@
                     <h4 class="product__item__detail__title">{{ item.name }}</h4>
                     <p class="product__item__detail__sales">月售{{ item.sales }}件</p>
                     <p class="product__item__detail__price">
-                        <span class="product__item__detail__price__yen">&yen;</span>{{ item.bigDecimalPrice }}
+                        <span class="product__item__detail__price__yen">&yen;</span>{{ item.price }}
                         <span class="product__item__detail__price__origin">&yen;{{ item.oldPrice }}</span>
                     </p>
                 </div>
@@ -39,7 +39,6 @@ import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 import { get } from '../../utils/request.js';
 import { getImgUrl } from '../../utils/common';
-import BigDecimal from 'js-big-decimal';
 
 // 使用封装到CartCommon模块中的方法
 import { addItemToCart, removeItemFromCart } from './CartCommon';
@@ -101,11 +100,6 @@ const useCurrentListEffect = (currentTab, shopId) => {
         if (result?.errorno === 0 && result?.data?.length) {
             for (const item of result.data) {
                 item.imageUrl = getImgUrl(item.imageUrl);
-
-                // 使用BigDecimal包裹从后端返回的价格，因为前端需要使用此类型更准确的计算价格
-                console.log('Raw price from API: ', item.price, typeof item.price);
-                item.bigDecimalPrice = new BigDecimal(item.price).getValue();
-                console.log('BigDecimal price: ', item.bigDecimalPrice, typeof item.bigDecimalPrice);
             }
             content.list = result.data;
         }
