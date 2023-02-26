@@ -9,9 +9,11 @@
         'docker__item--active': index === 0 // 第一个span项目才会使用docker__item--active
         }"
     >
-      <!-- 字体图标, 为了避免vue自动将插值表达式中的内容转移，使用v-html输出raw html -->
-      <div class="iconfont" v-html="item.icon" />
-      <div class="docker__title">{{ item.text }}</div>
+      <router-link :to="item.to">
+        <!-- 字体图标, 为了避免vue自动将插值表达式中的内容转移，使用v-html输出raw html -->
+        <div class="iconfont" v-html="item.icon" />
+        <div class="docker__title">{{ item.text }}</div>
+      </router-link>
     </span>
   </div>
 </template>
@@ -21,10 +23,10 @@ export default {
   name: 'DockerPart',
   setup () {
     const dockerList = [
-      { icon: '&#xe600;', text: '首页' },
-      { icon: '&#xe645;', text: '购物车' },
-      { icon: '&#xe643;', text: '订单' },
-      { icon: '&#xe60d;', text: '我的' }
+      { icon: '&#xe600;', text: '首页', to: { name: 'home' } },
+      { icon: '&#xe645;', text: '购物车', to: { name: 'cartList' } },
+      { icon: '&#xe643;', text: '订单', to: { name: 'home' } },
+      { icon: '&#xe60d;', text: '我的', to: { name: 'home' } }
     ]
     return {
       dockerList
@@ -50,12 +52,18 @@ export default {
   &__item { // 此种命名表示是选择器是.docker__item
     flex: 1; // 没有浮动块的伸展设置，设置平均撑满整个剩余空间。
     text-align: center;
+    a {
+      color: $content-fontcolor; //使用位于variables.scss中定义的变量
+      text-decoration: none;
+    }
     .iconfont {
       margin: .07rem 0 .02rem 0;
       font-size: .2rem; //设置字体图标的大小
     }
     &--active { //相当于选择器是.docker__item--active
-      color: #1FA4FC;
+      a {
+        color: #1FA4FC;
+      }
     }
   }
   &__title { // 此选择器相当于是.docker__title

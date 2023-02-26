@@ -46,6 +46,11 @@ const routes = [
         console.log('还没登录的，可以放行，允许其访问登录页面');
       }
     }
+  },
+  {
+    path: '/cartList',
+    name: 'cartList',
+    component: () => import(/* webpackChunkName: "cartList" */ '../views/cartList/CartList.vue')
   }
 ]
 
