@@ -16,7 +16,7 @@
                     <h4 class="product__item__detail__title">{{ item.name }}</h4>
                     <p class="product__item__detail__sales">月售{{ item.sales }}件</p>
                     <p class="product__item__detail__price">
-                        <span class="product__item__detail__price__yen">&yen;</span>{{ item.price.getValue() }}
+                        <span class="product__item__detail__price__yen">&yen;</span>{{ item.bigDecimalPrice }}
                         <span class="product__item__detail__price__origin">&yen;{{ item.oldPrice }}</span>
                     </p>
                 </div>
@@ -103,8 +103,9 @@ const useCurrentListEffect = (currentTab, shopId) => {
                 item.imageUrl = getImgUrl(item.imageUrl);
 
                 // 使用BigDecimal包裹从后端返回的价格，因为前端需要使用此类型更准确的计算价格
-                item.price = new BigDecimal(item.price);
-                console.log(item.price.getValue());
+                console.log('Raw price from API: ', item.price, typeof item.price);
+                item.bigDecimalPrice = new BigDecimal(item.price).getValue();
+                console.log('BigDecimal price: ', item.bigDecimalPrice, typeof item.bigDecimalPrice);
             }
             content.list = result.data;
         }

@@ -71,7 +71,9 @@ export default createStore({
       let total = new BigDecimal(0);
       currentPrudcts.forEach(product => {
         if (product.checked) {
-          total = total.add(product.price.multiply(new BigDecimal(product.count)));
+          console.log('In getTotalPriceInCart:', product);
+          console.log('In getTotalPriceInCart - product.price:', product.price);
+          total = total.add(new BigDecimal(product.price).multiply(new BigDecimal(product.count)));
         }
       });
       return total;
