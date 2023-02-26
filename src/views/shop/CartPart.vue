@@ -51,7 +51,7 @@
             <div class="check__info">
                 总计：<span class="check__info__price">&yen;{{ totalPriceInCart }}</span>
             </div>
-            <router-link to="/">
+            <router-link :to="{path: '/order'}">
                 <div class="check__btn">
                     去结算
                 </div>
