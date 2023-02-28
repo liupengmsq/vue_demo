@@ -79,6 +79,48 @@ export default createStore({
       return total;
     },
 
+    // 返回过滤后的购物车数据
+    /*
+      {
+        shopId: {
+          shopName: '123',
+          productList: [
+            {
+              id: '',
+              name: '',
+              prcie: '',
+              count: 123
+              totalPrice: price * count, <<增加对单个商品总价的计算
+              ...
+            },
+            {
+            }
+          ]
+        },
+        ...
+      }
+    */
+    getFilteredProductsWithShopInfo (state, getters) {
+      const currentPrudcts = getters.getCurrentProductsInCart;
+      const checkedProductList = {};
+      currentPrudcts.forEach(product => {
+        if (product.checked) {
+          console.log('In getTotalPriceInCart:', product);
+          console.log('In getTotalPriceInCart - product.price:', product.price);
+          product.totalPrice = new BigDecimal(product.price).multiply(new BigDecimal(product.count)).getValue();
+
+          if (!checkedProductList[product.shopId]) {
+            checkedProductList[product.shopId] = {
+              shopName: product.shopName,
+              productList: []
+            };
+          }
+          checkedProductList[product.shopId].productList.push(product);
+        }
+      });
+      return checkedProductList;
+    },
+
     // 获取在购物车中所有产品的count不是0的产品列表
     // 也就是当前购物车中有效的product lsit
     getCurrentProductsInCart (state) {

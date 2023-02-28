@@ -29,7 +29,7 @@
                     <h4 class="product__item__detail__title">{{ item.name }}</h4>
                     <p class="product__item__detail__sales">月售{{ item.sales }}件</p>
                     <p class="product__item__detail__price">
-                        <span class="product__item__detail__price__yen">&yen;</span>{{ item.bigDecimalPrice }}
+                        <span class="product__item__detail__price__yen">&yen;</span>{{ item.price }}
                         <span class="product__item__detail__price__origin">&yen;{{ item.oldPrice }}</span>
                     </p>
                 </div>
