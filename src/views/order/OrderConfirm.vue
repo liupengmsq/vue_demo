@@ -15,11 +15,10 @@
                 <div class="iconfont top__receiver__enter">&#xe697;</div>
             </div>
         </div>
-        <div class="products">
-            <div class="products__list">
-                <div class="product__item" v-for="item in getProductsWithShopInfo" :key="item.id">
-                    <div class="products__title">{{ item.shopName }}</div>
-                    <div class="products__item" v-for="productItem in item.productList" :key="productItem.id">
+        <div class="products" v-for="item in getProductsWithShopInfo" :key="item.id">
+            <div class="product__item">
+                <div class="products__title">{{ item.shopName }}</div>
+                <div class="products__item" v-for="productItem in item.productList" :key="productItem.id">
                     <img class="products__item__img" :src="productItem.imageUrl">
                     <div class="products__item__detail">
                         <h4 class="products__item__detail__title">{{ productItem.name }}</h4>
@@ -35,7 +34,6 @@
                         </p>
                     </div>
                 </div>
-            </div>
             </div>
         </div>
     </div>
@@ -131,7 +129,7 @@ export default {
     }
 }
 .products {
-    margin: .16rem .18rem .55rem .18rem;
+    margin: .16rem .18rem 0 .18rem;
     background: #FFF;
     &__title {
         padding: .16rem .16rem 0 .16rem;
