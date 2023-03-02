@@ -107,15 +107,21 @@ export default createStore({
         if (product.checked) {
           console.log('In getTotalPriceInCart:', product);
           console.log('In getTotalPriceInCart - product.price:', product.price);
+
+          // 计算单个商品的购买总价
           product.totalPrice = new BigDecimal(product.price).multiply(new BigDecimal(product.count)).getValue();
 
           if (!checkedProductList[product.shopId]) {
             checkedProductList[product.shopId] = {
               shopName: product.shopName,
+              shopTotalPrice: 0, // 每个商店中选购商品的总价
               productList: []
             };
           }
           checkedProductList[product.shopId].productList.push(product);
+
+          // 计算每个shop下的所有商品的总价格
+          checkedProductList[product.shopId].shopTotalPrice = new BigDecimal(checkedProductList[product.shopId].shopTotalPrice).add(new BigDecimal(product.totalPrice)).getValue();
         }
       });
       return checkedProductList;
