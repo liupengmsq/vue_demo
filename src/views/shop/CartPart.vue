@@ -251,7 +251,7 @@ export default {
     &__header {
         display: flex;
         line-height: .52rem;
-        border-bottom: 1px solid $content-bgColor;
+        border-bottom: .01rem solid $content-bgColor;
         &__all {
             display: flex;
             width: .64rem;

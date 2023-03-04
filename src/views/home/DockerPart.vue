@@ -47,7 +47,7 @@ export default {
   bottom: 0;
   width: 100%;
   height: .49rem;
-  border-top: 1px solid $content-bgColor;
+  border-top: .01rem solid $content-bgColor;
   color: $content-fontcolor; //使用位于variables.scss中定义的变量
   &__item { // 此种命名表示是选择器是.docker__item
     flex: 1; // 没有浮动块的伸展设置，设置平均撑满整个剩余空间。

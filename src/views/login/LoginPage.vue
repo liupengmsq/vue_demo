@@ -118,7 +118,7 @@ export default {
         margin: 0 .4rem .16rem .4rem; // 设置外边距，将input div挤到中间居中
         padding: 0 .16rem; // 设置内边距，将里面的输入框content与外面的input div留出距离
         background: #F9F9F9;
-        border: 1px solid rgba(0,0,0,0.10);
+        border: .01rem solid rgba(0,0,0,0.10);
         border-radius: 6px;  // 圆角
         &__content {
             line-height: .48rem;
