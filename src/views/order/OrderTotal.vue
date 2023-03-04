@@ -23,67 +23,85 @@ import { computed, ref } from 'vue';
 import { post } from '../../utils/request';
 import ToastComponent, { useToastEffect } from '../../components/ToastComponent.vue'
 
+// 控制是否显示订单确认对话框
+const useOrderConfirmDialogEffect = () => {
+    const showOrderDialog = ref(false);
+    const handleShowOrderDialog = () => {
+        showOrderDialog.value = true;
+    }
+    const handleDismissOrderDialog = () => {
+        showOrderDialog.value = false;
+    }
+
+    return {
+        showOrderDialog,
+        handleShowOrderDialog,
+        handleDismissOrderDialog
+    }
+}
+
+// 发送订单信息到后端接口
+const sendOrderInfoToBackendEffect = (showToast) => {
+    const store = useStore();
+    const router = useRouter();
+
+    // 此方法用于产生发给后端的payload对象
+    const generatePayloadForOrder = () => {
+        const productWithShopInfoList = store.getters.getFilteredProductsWithShopInfo;
+
+        // 设置payload的初始值
+        const orderPayload = {
+            addressId: 123,
+            isCanceled: false,
+            shopOrders: []
+        };
+
+        // 从购物车的getter方法getFilteredProductsWithShopInfo中获取order后端API所需的数据
+        const shopIds = Object.keys(productWithShopInfoList);
+        shopIds.forEach((shopId, index) => {
+            const shopOrder = {};
+            shopOrder.shopId = shopId;
+            shopOrder.shopName = productWithShopInfoList[shopId].shopName;
+            shopOrder.productList = productWithShopInfoList[shopId].productList;
+            orderPayload.shopOrders.push(shopOrder);
+        })
+        return orderPayload;
+    }
+
+    // 确认订单后将订单信息发送给后端服务区，并清空当前的购物车
+    const handleConfirmOrder = async () => {
+        const payLoadForOrder = generatePayloadForOrder();
+        try {
+            const result = await post('/api/order', payLoadForOrder);
+            if (result?.errorno === 0) {
+                // 订单提交成功后，清空购物车
+                store.dispatch('removeAllItemsFromCart')
+                router.push({ name: 'home' });
+            } else {
+                showToast('订单结算失败');
+            }
+        } catch (e) {
+            showToast('订单结算请求失败');
+        }
+    }
+    return { handleConfirmOrder };
+}
+
 export default {
     components: {
         Toast: ToastComponent
     },
     setup () {
-        const store = useStore();
-        const router = useRouter();
-
-        // 控制是否显示订单确认对话框
-        const showOrderDialog = ref(false);
-        const handleShowOrderDialog = () => {
-            showOrderDialog.value = true;
-        }
-        const handleDismissOrderDialog = () => {
-            showOrderDialog.value = false;
-        }
+        // 控制显示或隐藏订单确认对话框
+        const { showOrderDialog, handleShowOrderDialog, handleDismissOrderDialog } = useOrderConfirmDialogEffect();
 
         // 获取所有商店中商品的总价
+        const store = useStore();
         const totalPriceInCart = computed(() => store.getters.getTotalPriceInCart.getValue());
 
-        // 此方法用于产生发给后端的payload对象
-        const generatePayloadForOrder = () => {
-            const productWithShopInfoList = store.getters.getFilteredProductsWithShopInfo;
-
-            // 设置payload的初始值
-            const orderPayload = {
-                addressId: 123,
-                isCanceled: false,
-                shopOrders: []
-            };
-
-            // 从购物车的getter方法getFilteredProductsWithShopInfo中获取order后端API所需的数据
-            const shopIds = Object.keys(productWithShopInfoList);
-            shopIds.forEach((shopId, index) => {
-                const shopOrder = {};
-                shopOrder.shopId = shopId;
-                shopOrder.shopName = productWithShopInfoList[shopId].shopName;
-                shopOrder.productList = productWithShopInfoList[shopId].productList;
-                orderPayload.shopOrders.push(shopOrder);
-            })
-            return orderPayload;
-        }
-
+        // 发送订单信息到后端服务器
         const { show, toastMessage, showToast } = useToastEffect();
-
-        // 确认订单后将订单信息发送给后端服务区，并清空当前的购物车
-        const handleConfirmOrder = async () => {
-            const payLoadForOrder = generatePayloadForOrder();
-            try {
-                const result = await post('/api/order', payLoadForOrder);
-                if (result?.errorno === 0) {
-                    // 订单提交成功后，清空购物车
-                    store.dispatch('removeAllItemsFromCart')
-                    router.push({ name: 'home' });
-                } else {
-                    showToast('订单结算失败');
-                }
-            } catch (e) {
-                showToast('订单结算请求失败');
-            }
-        }
+        const { handleConfirmOrder } = sendOrderInfoToBackendEffect(showToast);
 
         return {
             totalPriceInCart,
